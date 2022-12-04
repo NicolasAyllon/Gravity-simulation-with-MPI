@@ -6,8 +6,8 @@ PROGRAMS = [
 
 IOFILES = {
   "nb-10.txt"     : "nb-10-output.txt"        ,
-  # "nb-100.txt"    : "nb-100-output.txt"     ,
-  # "nb-100000.txt" : "nb-100000-output.txt"
+  "nb-100.txt"    : "nb-100-output.txt"     ,
+  "nb-100000.txt" : "nb-100000-output.txt"
 }
 
 # Maybe change to arrays later
