@@ -1,6 +1,5 @@
 #include <argparse.h>
 
-// TODO
 // For testing and debugging
 void print_opts(struct options_t* opts) {
   std::cout << "Options Data:" << std::endl;
