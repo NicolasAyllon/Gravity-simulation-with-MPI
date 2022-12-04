@@ -67,11 +67,10 @@ void get_opts(int argc, char** argv, struct options_t* opts) {
   set_default_opts(opts);
   //print_opts(opts);
 
-// TODO
   int c = 0;
   // char* optarg;  // stores string following option character
   // int optopt;    // stores unrecognized option character
-  while((c = getopt(argc, argv, "i:k:d:m:t:cs:")) != -1) { // [!] change
+  while((c = getopt(argc, argv, "i:o:s:t:d:V")) != -1) {
     // Debugging
     // print_opts(opts);
     // std::cout << "c: " << (char)c << std::endl;
