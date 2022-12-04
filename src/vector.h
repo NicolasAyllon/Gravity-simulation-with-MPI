@@ -1,6 +1,8 @@
 #ifndef _VECTOR_H
 #define _VECTOR_H
 
+#include <cmath>
+
 template <typename T>
 struct Vec2 {
   T x;
@@ -126,4 +128,42 @@ bool operator!=(const Vec2<T>& v1, const Vec2<T>& v2) {
   return !(v1 == v2);
 }
 
-#endif
+////////////////////////////////////////////////////////////////////////////////
+// Length, Dot Product & Distance
+////////////////////////////////////////////////////////////////////////////////
+
+// Returns the dot product of vectors a and b
+template <typename T>
+T dot(const Vec2<T>& a, const Vec2<T>& b) {
+  return (a.x*b.x + a.y*b.y);
+}
+
+// Returns the squared length of vector v
+// Equivalent to v.x*v.x + v.y*v.y
+template <typename T>
+T len2(const Vec2<T>& v) {
+  return dot(v, v);
+}
+
+// Returns the length of vector v
+// Equivalent to √(v.x*v.x + v.y*v.y)
+template <typename T>
+T len(const Vec2<T>& v) {
+  return std::sqrt(len2(v));
+}
+
+// Returns the squared distance between vectors a and b
+// Equivalent to (b.x - a.x)^2 + (b.y - a.y)^2
+template <typename T>
+T dist2(const Vec2<T>& a, const Vec2<T>& b) {
+  return len2(b - a);
+}
+
+// Returns the distance between vectors a and b
+// Equivalent to √[(b.x - a.x)^2 + (b.y - a.y)^2]
+template <typename T>
+T dist(const Vec2<T>& a, const Vec2<T>& b) {
+  return len(b - a);
+}
+
+#endif //_VECTOR_H
