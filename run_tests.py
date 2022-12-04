@@ -5,9 +5,9 @@ PROGRAMS = [
 ]
 
 IOFILES = {
-  "nb-10.txt"     : "nb-10-output.txt"
-  "nb-100.txt"    : "nb-100-output.txt"
-  "nb-100000.txt" : "nb-100000-output.txt"
+  "nb-10.txt"     : "nb-10-output.txt"        ,
+  # "nb-100.txt"    : "nb-100-output.txt"     ,
+  # "nb-100000.txt" : "nb-100000-output.txt"
 }
 
 # Maybe change to arrays later
@@ -18,15 +18,15 @@ DT_TIMESTEP = 0.005
 NUM_TESTS = 1
 
 for program in PROGRAMS:
-    for inputfilename, outputfilename in IOFILES:
+    for inputfilename, outputfilename in IOFILES.items():
         for i in range(NUM_TESTS):
             subprocess.call([
-              program,
+              "bin/{}".format(program),
               "-i", "input/{}".format(inputfilename),
               "-o", "output/{}".format(outputfilename),
               # "-V", # visualization is not used
-              "-s", STEPS,
-              "-t", THETA,
-              "-d", DT_TIMESTEP
+              "-s", str(STEPS),
+              "-t", str(THETA),
+              "-d", str(DT_TIMESTEP)
             ])
         print("") # newline after each test
