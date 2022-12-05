@@ -93,9 +93,7 @@ struct QuadtreeNode {
 
 QuadtreeNode* insert(QuadtreeNode* root, Region<double> region, Particle* p) {
   // If node is null, create new node for this region containing the particle
-  if(root == nullptr) {
-    return new QuadtreeNode(region, p);
-  }
+  if(root == nullptr) { return new QuadtreeNode(region, p); };
 
   // Internal node (contains no particles directly) or newly empty leaf node
   if(root->particle == nullptr) {
@@ -112,11 +110,12 @@ QuadtreeNode* insert(QuadtreeNode* root, Region<double> region, Particle* p) {
     root = insert(root->quadrants[q], root->region.subregion(q), p);
     return root;
   }
-  
+
   // Leaf node (contains particle)
   else { // root->particle != nullptr
-    // Save particle that was here
+    // Save particle that was here & remove it
     Particle* prev = root->particle;
+    root->particle = nullptr;
     // Reset fields
     root->total_mass = 0;
     root->num_particles = 0;
