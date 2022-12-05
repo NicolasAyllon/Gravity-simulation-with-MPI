@@ -44,19 +44,10 @@ bool isContained(const Particle& p, const Region<T>& r) {
 
 template <typename T>
 Quadrant quadrant(const Particle& p, const Region<T>& r) {
-  // North
   if(p.position.y > r.y_center()) {
-    // East
-    if(p.position.x > r.x_center()) { return Quadrant::NE; }
-    // West
-    else { return Quadrant::NW; }
-  } 
-  // South
-  else {
-    // East
-    if(p.position.x > r.x_center()) { return Quadrant::SE; }
-    // West
-    else { return Quadrant::SW; }
+    return (p.position.x < r.x_center() ? Quadrant::NW : Quadrant::NE);
+  } else {
+    return (p.position.x < r.x_center() ? Quadrant::SW : Quadrant::SE);
   }
 }
 
@@ -133,7 +124,7 @@ struct BarnesHutTree {
 
   BarnesHutTree(const Region<double>& region);
   ~BarnesHutTree();
-  
+
   bool insert(Particle& p);
 };
 
