@@ -69,26 +69,6 @@ Vec2<T> operator*(T k, const Vec2<T>& v) {
   };
 }
 
-// Different Type
-// Right multiplication of vector v by scalar k: vk
-template <typename T> // TODO
-Vec2<T> operator*(const Vec2<T>& v, T k) {
-  return Vec2{
-    v.x * k,
-    v.y * k
-  };
-}
-
-// Different Type
-// Left multiplication of vector v by scalar k: kv
-template <typename T, typename U>
-Vec2<T> operator*(U k, const Vec2<T>& v) {
-  return Vec2{
-    k * v.x,
-    k * v.y
-  };
-}
-
 // Vector division by scalar: v/k
 template <typename T>
 Vec2<T> operator/(const Vec2<T>& v, T k) {
