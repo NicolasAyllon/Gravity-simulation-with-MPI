@@ -11,7 +11,7 @@ struct Vec2 {
   Vec2() = default;
   Vec2(T x, T y);
   Vec2(const Vec2& v) = default;
-  Vec2& operator=(const Vec2& rhs);  
+  Vec2& operator=(const Vec2& rhs);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
