@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
   // Read file
   auto particles = read_file(opts.inputfilename);
   for (auto particle : particles) {
-    std::cout << particle.toString() << '\n';
+    std::cout << particle.toStringMatchInputOrder() << '\n';
   }
 
   return 0; // <!> end here for now

@@ -17,6 +17,15 @@ struct Particle {
                   << "velocity: " << velocity.toString() << "]";
     return ss.str();
   }
+
+  std::string toStringMatchInputOrder() {
+    std::stringstream ss;
+    ss << "Particle: [idx: "      << index  << ", "
+                  << "position: " << position.toString() << ", "
+                  << "mass:"      << mass   << ", "
+                  << "velocity: " << velocity.toString() << "]";
+    return ss.str();
+  }
 };
 
 #endif
