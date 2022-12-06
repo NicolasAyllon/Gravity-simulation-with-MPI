@@ -4,6 +4,9 @@
 #include "particle.h"
 #include "vector.h"
 #include <array>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Quadrant & Region
@@ -36,6 +39,13 @@ struct Region {
     if (q == Quadrant::SE) return Region{x_center(), x_max, y_min, y_center()};
     return Region{0, 0, 0, 0};
   }
+
+  std::string toString() {
+    std::stringstream ss;
+    ss << "[ x_min: " << x_min << ", x_max: " << x_max
+       << ", y_min: " << y_min << ", y_max: " << y_max; << " ]";
+    return ss.str();
+  }
 };
 
 // Returns whether the particle is contained in the rectangular region.
@@ -64,13 +74,13 @@ Quadrant quadrant(const Particle& p, const Region<T>& r) {
 
 struct QuadtreeNode {
   Region<double> region;  // Bounds
+  Particle* particle;     // -internal node: nullptr
+                          // -leaf node: pointer to particle
   std::array<QuadtreeNode*, 4> quadrants;
 
   double total_mass;  // Sum of particle masses in this region
   int num_particles;  // Number of particles in this region
   Vec2<double> com;   // Position of center of mass for this region
-  Particle* particle; // -internal node: nullptr
-                      // -leaf node: pointer to particle
 
   // Construct a quadtree node for the given region, empty with no particles
   QuadtreeNode(Region<double> r) 
@@ -79,7 +89,10 @@ struct QuadtreeNode {
         total_mass(0), // default-construct: 0 for numeric
         num_particles(0),
         com(Vec2<double>(0, 0)),
-        particle(nullptr) {}
+        particle(nullptr) {
+          std::cout << "Constructing quadtree node, empty:\n";
+          std::cout << toString();
+        }
 
   // Construct a quadtree node the region containing the 1 particle passed in
   QuadtreeNode(Region<double> r, Particle* p)
@@ -88,7 +101,24 @@ struct QuadtreeNode {
         total_mass(p->mass),
         num_particles(1),
         com(p->position),
-        particle(p) {}
+        particle(p) {
+          std::cout << "Constructing quadtree node, with particle:\n";
+          std::cout << toString();
+        }
+  
+  std::string toString() {
+    std::stringstream ss;
+    ss << "Region: "        << region.toString()              << '\n';
+    ss << "particle: "      << particle                       << '\n';
+    ss << "quadrants: ["    << quadrants[Quadrant::NE] << ", "
+                            << quadrants[Quadrant::NW] << ", "
+                            << quadrants[Quadrant::SW] << ", "
+                            << quadrants[Quadrant::SE] << "]" << '\n';
+    ss << "total_mass: "    << total_mass                     << '\n';
+    ss << "num_particles: " << num_particles                  << '\n';
+    ss << "com: "           << com.toString()                 << '\n';
+    return ss.str();
+  }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,8 +130,8 @@ struct BarnesHutTree {
 
   BarnesHutTree(const Region<double>& region);
   BarnesHutTree(const BarnesHutTree&) = delete;
-  BarnesHutTree& operator=(const BarnesHutTree&) = delete;
   ~BarnesHutTree();
+  BarnesHutTree& operator=(const BarnesHutTree&) = delete;
 
   bool insert(Particle& p);
 
@@ -147,26 +177,38 @@ bool BarnesHutTree::insert(Particle& p) {
 QuadtreeNode* BarnesHutTree::insert(QuadtreeNode* root, 
                                     Region<double> region, 
                                     Particle* p) {
+  std::cout << "Frame:\n";
+  std::cout << root->toString();
+  std::cout << "args: " << region.toString() << ", " << p << '\n'; // address of particle
   // If node is null, create new node for this region containing the particle
-  if(root == nullptr) { return new QuadtreeNode(region, p); };
+  if(root == nullptr) {
+    std::cout << "Node* is null, need new node...\n";
+    return new QuadtreeNode(region, p); 
+  };
 
   // Internal node (contains no particles directly) or newly empty leaf node
   if(root->particle == nullptr) {
+    std::cout << "Internal node, update center of mass...\n";
     // Update center of mass (com)
     auto n = (root->com)*(root->total_mass) + (p->mass)*(p->position);
     auto d = root->total_mass + p->mass;
     root->com = n/d;
+    std::cout << "new com: " << root->com.toString() << '\n';
     // Update number of particles & total mass
     root->num_particles++;
+    std::cout << "incremented num_particles to " << root->num_particles << '\n';
     root->total_mass += p->mass;
+    std::cout << "increased mass to " << root->total_mass << '\n';
     // Insert into appropriate quadrant
     Quadrant q = quadrant(*p, region);
+    std::cout << "inserting " << p->toString() << " in quadrant " << q << '\n';
     root = insert(root->quadrants[q], root->region.subregion(q), p);
     return root;
   }
 
   // Leaf node (already contains particle)
   else { // root->particle != nullptr
+    std::cout << "Leaf node, need to remove particle here and reinsert both\n";
     // Save particle that was here & remove it
     Particle* prev = root->particle;
     root->particle = nullptr;

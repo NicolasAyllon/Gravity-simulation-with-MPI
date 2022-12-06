@@ -2,6 +2,8 @@
 #define _VECTOR_H
 
 #include <cmath>
+#include <sstream>
+#include <string>
 
 template <typename T>
 struct Vec2 {
@@ -12,6 +14,8 @@ struct Vec2 {
   Vec2(T x, T y);
   Vec2(const Vec2& v) = default;
   Vec2& operator=(const Vec2& rhs);
+
+  std::string toString()
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -25,6 +29,16 @@ Vec2<T>& Vec2<T>::operator=(const Vec2& rhs) {
   this.x = rhs.x;
   this.y = rhs.y;
   return this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// String
+////////////////////////////////////////////////////////////////////////////////
+template <typename T>
+std::string Vec2<T>::toString() {
+  std::stringstream ss;
+  ss << "(" << x << ", " << y << ")";
+  return ss.str();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -167,5 +181,6 @@ template <typename T>
 T dist(const Vec2<T>& a, const Vec2<T>& b) {
   return len(b - a);
 }
+
 
 #endif //_VECTOR_H

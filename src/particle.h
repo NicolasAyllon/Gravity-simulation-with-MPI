@@ -8,6 +8,15 @@ struct Particle {
   double mass;
   Vec2<double> position;
   Vec2<double> velocity;
+
+  std::string toString() {
+    std::stringstream ss;
+    ss << "Particle: [idx: "      << index  << ", "
+                  << "mass:"      << mass   << ", "
+                  << "position: " << position.toString() << ", "
+                  << "velocity: " << velocity.toString() << "]";
+    return ss.str();
+  }
 };
 
 #endif
