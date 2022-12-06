@@ -43,7 +43,7 @@ struct Region {
   std::string toString() {
     std::stringstream ss;
     ss << "[ x_min: " << x_min << ", x_max: " << x_max
-       << ", y_min: " << y_min << ", y_max: " << y_max; << " ]";
+       << ", y_min: " << y_min << ", y_max: " << y_max << " ]";
     return ss.str();
   }
 };
@@ -85,26 +85,28 @@ struct QuadtreeNode {
   // Construct a quadtree node for the given region, empty with no particles
   QuadtreeNode(Region<double> r) 
       : region(r), 
+        particle(nullptr),
         quadrants({nullptr, nullptr, nullptr, nullptr}), 
         total_mass(0), // default-construct: 0 for numeric
         num_particles(0),
-        com(Vec2<double>(0, 0)),
-        particle(nullptr) {
-          std::cout << "Constructing quadtree node, empty:\n";
-          std::cout << toString();
-        }
+        com(Vec2<double>(0, 0)) 
+  {
+    std::cout << "Constructing quadtree node, empty:\n";
+    std::cout << toString();
+  }
 
   // Construct a quadtree node the region containing the 1 particle passed in
   QuadtreeNode(Region<double> r, Particle* p)
       : region(r),
+        particle(p),
         quadrants({nullptr, nullptr, nullptr, nullptr}),
         total_mass(p->mass),
         num_particles(1),
-        com(p->position),
-        particle(p) {
-          std::cout << "Constructing quadtree node, with particle:\n";
-          std::cout << toString();
-        }
+        com(p->position)
+  {
+    std::cout << "Constructing quadtree node, with particle:\n";
+    std::cout << toString();
+  }
   
   std::string toString() {
     std::stringstream ss;
@@ -137,6 +139,7 @@ struct BarnesHutTree {
 
   private: 
   QuadtreeNode* insert(QuadtreeNode*, Region<double>, Particle* p);
+  void destroy(QuadtreeNode* node);
 };
 
 BarnesHutTree::BarnesHutTree(const Region<double>& r) : region(r) {}
@@ -145,7 +148,7 @@ BarnesHutTree::~BarnesHutTree() {
   destroy(root);
 }
 
-void destroy(QuadtreeNode* root) {
+void BarnesHutTree::destroy(QuadtreeNode* root) {
   if (root == nullptr) return;
   destroy(root->quadrants[Quadrant::NE]);
   destroy(root->quadrants[Quadrant::NW]);

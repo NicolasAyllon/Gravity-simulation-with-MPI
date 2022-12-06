@@ -1,7 +1,9 @@
 #ifndef _IO_H
 #define _IO_H
 
-// TODO
-void read_file ();
+#include "particle.h"
+#include <vector>
+
+std::vector<Particle> read_file(char* inputfilename);
 
 #endif

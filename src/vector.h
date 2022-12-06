@@ -15,7 +15,7 @@ struct Vec2 {
   Vec2(const Vec2& v) = default;
   Vec2& operator=(const Vec2& rhs);
 
-  std::string toString()
+  std::string toString();
 };
 
 ////////////////////////////////////////////////////////////////////////////////
