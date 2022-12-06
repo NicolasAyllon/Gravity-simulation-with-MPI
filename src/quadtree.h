@@ -34,7 +34,7 @@ struct Region {
     if (q == Quadrant::NW) return Region{x_min, x_center(), y_center(), y_max};
     if (q == Quadrant::SW) return Region{x_min, x_center(), y_min, y_center()};
     if (q == Quadrant::SE) return Region{x_center(), x_max, y_min, y_center()};
-    return Region{0,0,0,0};
+    return Region{0, 0, 0, 0};
   }
 };
 
@@ -66,11 +66,11 @@ struct QuadtreeNode {
   Region<double> region;  // Bounds
   std::array<QuadtreeNode*, 4> quadrants;
 
-  double total_mass;            // Sum of particle masses in this region
-  int num_particles;            // Number of particles in this region
-  Vec2<double> center_of_mass;  // Position of center of mass for this region
-  Particle* particle;           // -internal node: nullptr
-                                // -leaf node: pointer to particle
+  double total_mass;  // Sum of particle masses in this region
+  int num_particles;  // Number of particles in this region
+  Vec2<double> com;   // Position of center of mass for this region
+  Particle* particle; // -internal node: nullptr
+                      // -leaf node: pointer to particle
 
   // Construct a quadtree node for the given region, empty with no particles
   QuadtreeNode(Region<double> r) 
@@ -78,7 +78,7 @@ struct QuadtreeNode {
         quadrants({nullptr, nullptr, nullptr, nullptr}), 
         total_mass(0), // default-construct: 0 for numeric
         num_particles(0),
-        center_of_mass(Vec2<double>(0, 0)),
+        com(Vec2<double>(0, 0)),
         particle(nullptr) {}
 
   // Construct a quadtree node the region containing the 1 particle passed in
@@ -87,45 +87,9 @@ struct QuadtreeNode {
         quadrants({nullptr, nullptr, nullptr, nullptr}),
         total_mass(p->mass),
         num_particles(1),
-        center_of_mass(p->position),
+        com(p->position),
         particle(p) {}
 };
-
-QuadtreeNode* insert(QuadtreeNode* root, Region<double> region, Particle* p) {
-  // If node is null, create new node for this region containing the particle
-  if(root == nullptr) { return new QuadtreeNode(region, p); };
-
-  // Internal node (contains no particles directly) or newly empty leaf node
-  if(root->particle == nullptr) {
-    // Update center of mass (com)
-    Vec2<double> com_numerator 
-      = (root->center_of_mass)*(root->total_mass) + (p->mass)*(p->position);
-    double com_denominator = root->total_mass + p->mass;
-    root->center_of_mass = com_numerator/com_denominator;
-    // Update number of particles & total mass
-    root->num_particles++;
-    root->total_mass += p->mass;
-    // Insert into appropriate quadrant
-    Quadrant q = quadrant(*p, region);
-    root = insert(root->quadrants[q], root->region.subregion(q), p);
-    return root;
-  }
-
-  // Leaf node (contains particle)
-  else { // root->particle != nullptr
-    // Save particle that was here & remove it
-    Particle* prev = root->particle;
-    root->particle = nullptr;
-    // Reset fields
-    root->total_mass = 0;
-    root->num_particles = 0;
-    root->center_of_mass = {0, 0};
-    // Re-insert both particles starting at this node
-    root = insert(root, region, prev);
-    root = insert(root, region, p);
-    return root;
-  }
-}
 
 void destroy(QuadtreeNode* root) {
   if (root == nullptr) return;
@@ -149,6 +113,9 @@ struct BarnesHutTree {
   ~BarnesHutTree();
 
   bool insert(Particle& p);
+
+  private: 
+  QuadtreeNode* insert(QuadtreeNode*, Region<double>, Particle* p);
 };
 
 BarnesHutTree::BarnesHutTree(const Region<double>& r) : region(r) {}
@@ -164,14 +131,53 @@ BarnesHutTree::~BarnesHutTree() {
 bool BarnesHutTree::insert(Particle& p) {
   // If particle p is inside the root region, insert it into the quadtree
   if(isContained(p, region)) {
-    // Use global ::insert, not member insert (this.insert(...))
-    root = ::insert(root, region, &p);
+    // Use private helping insert method
+    root = insert(root, region, &p);
     return true;
   }
   // If particle p is outside the region, set mass to -1 and do not insert.
   else {
     p.mass = -1;
     return false;
+  }
+}
+
+// Recursively inserts the particle into the Quadtree, starting at the 
+// given node (root) and corresponding to the region passed in.
+QuadtreeNode* BarnesHutTree::insert(QuadtreeNode* root, 
+                                    Region<double> region, 
+                                    Particle* p) {
+  // If node is null, create new node for this region containing the particle
+  if(root == nullptr) { return new QuadtreeNode(region, p); };
+
+  // Internal node (contains no particles directly) or newly empty leaf node
+  if(root->particle == nullptr) {
+    // Update center of mass (com)
+    auto n = (root->com)*(root->total_mass) + (p->mass)*(p->position);
+    auto d = root->total_mass + p->mass;
+    root->com = n/d;
+    // Update number of particles & total mass
+    root->num_particles++;
+    root->total_mass += p->mass;
+    // Insert into appropriate quadrant
+    Quadrant q = quadrant(*p, region);
+    root = insert(root->quadrants[q], root->region.subregion(q), p);
+    return root;
+  }
+
+  // Leaf node (already contains particle)
+  else { // root->particle != nullptr
+    // Save particle that was here & remove it
+    Particle* prev = root->particle;
+    root->particle = nullptr;
+    // Reset fields
+    root->total_mass = 0;
+    root->num_particles = 0;
+    root->com = {0, 0};
+    // Re-insert both particles starting at this node
+    root = insert(root, region, prev);
+    root = insert(root, region, p);
+    return root;
   }
 }
 
