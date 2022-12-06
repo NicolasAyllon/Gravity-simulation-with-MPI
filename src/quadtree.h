@@ -91,15 +91,6 @@ struct QuadtreeNode {
         particle(p) {}
 };
 
-void destroy(QuadtreeNode* root) {
-  if (root == nullptr) return;
-  destroy(root->quadrants[Quadrant::NE]);
-  destroy(root->quadrants[Quadrant::NW]);
-  destroy(root->quadrants[Quadrant::SW]);
-  destroy(root->quadrants[Quadrant::SE]);
-  delete root;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Barnes Hut Tree
 ////////////////////////////////////////////////////////////////////////////////
@@ -122,6 +113,15 @@ BarnesHutTree::BarnesHutTree(const Region<double>& r) : region(r) {}
 
 BarnesHutTree::~BarnesHutTree() {
   destroy(root);
+}
+
+void destroy(QuadtreeNode* root) {
+  if (root == nullptr) return;
+  destroy(root->quadrants[Quadrant::NE]);
+  destroy(root->quadrants[Quadrant::NW]);
+  destroy(root->quadrants[Quadrant::SW]);
+  destroy(root->quadrants[Quadrant::SE]);
+  delete root;
 }
 
 // Inserts the particle into the Quadtree
