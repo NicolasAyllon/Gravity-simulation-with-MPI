@@ -179,7 +179,8 @@ QuadtreeNode* BarnesHutTree::insert(QuadtreeNode* root,
                                     Particle* p) {
   std::cout << "Frame:\n";
   std::cout << root->toString();
-  std::cout << "args: " << region.toString() << ", " << p << '\n'; // address of particle
+  std::cout << "args: " << region.toString() << ", "
+                        << "particle: " << p << '\n'; // address
   // If node is null, create new node for this region containing the particle
   if(root == nullptr) {
     std::cout << "Node* is null, need new node...\n";
