@@ -110,6 +110,7 @@ struct QuadtreeNode {
   
   std::string toString() {
     std::stringstream ss;
+    ss << "This node: "     << this                           << '\n';
     ss << "Region: "        << region.toString()              << '\n';
     ss << "particle: "      << particle                       << '\n';
     ss << "quadrants: ["    << quadrants[Quadrant::NE] << ", "

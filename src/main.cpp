@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
   // Create Quadtree for rectangular region (0<=x<=4, 0<=y<=4)
   Region<double> region = {0, 4, 0, 4};
   Quadtree quadtree(region);
-  for (auto particle : particles) {
+  for (auto& particle : particles) {
     quadtree.insert(particle);
   }
   return 0; // <!> end here for now
