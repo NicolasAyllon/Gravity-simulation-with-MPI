@@ -9,6 +9,7 @@ struct Particle {
   Vec2<double> position;
   Vec2<double> velocity;
 
+  void update(Vec2<double> force, double dt);
   std::string toString();
   std::string toStringMatchInputOrder(bool);
 };

@@ -9,22 +9,34 @@ int main(int argc, char* argv[]) {
 
   // Get options
   struct options_t opts;
-  get_opts(argc, argv, &opts);
-  // print_opts(&opts);
+  get_opts(argc, argv, &opts); // print_opts(&opts);
 
   // Read file
-  auto particles = read_file(opts.inputfilename);
-  // std::cout << "len: " << particles.size() << ", cap: " << particles.capacity() << '\n';
-  // for (auto particle : particles) {
-  //   std::cout << particle.toStringMatchInputOrder() << '\n';
-  // }
+  std::vector<Particle> particles = read_file(opts.inputfilename);
+  // size_t N = particles.size();
+
+  // For i = 0, 1, 2, ...steps-1
 
   // Create Quadtree for rectangular region (0<=x<=4, 0<=y<=4)
   Region<double> region = {0, 4, 0, 4};
   Quadtree quadtree(region);
-  for (auto& particle : particles) {
+  // Insert particles
+  for (Particle& particle : particles) {
     quadtree.insert(particle);
   }
+  return 0; // <!> end here for now
+
+  // For each particle, compute force
+  // std::vector<Vec2<double>> forces;
+  // int start = 0; int end = N;
+  // for (int i = start; i < end; ++i) {
+  //   forces[i] = calculate_force(particles[i], quadtree);
+  // }
+  // // Calculate new position
+  // for (int i = start; i < end; ++i) {
+  //   particles[i].update(forces[i], dt);
+  // }
+
   return 0; // <!> end here for now
 
 
