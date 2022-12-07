@@ -26,9 +26,9 @@ Vec2<T>::Vec2(T x_in, T y_in) : x(x_in), y(y_in) {}
 
 template <typename T>
 Vec2<T>& Vec2<T>::operator=(const Vec2& rhs) {
-  this.x = rhs.x;
-  this.y = rhs.y;
-  return this;
+  x = rhs.x;
+  y = rhs.y;
+  return *this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

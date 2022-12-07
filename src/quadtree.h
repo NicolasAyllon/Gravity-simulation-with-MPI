@@ -29,8 +29,8 @@ struct Region {
   T y_min;
   T y_max;
 
-  T x_center() { return (x_min + x_max)/2; }
-  T y_center() { return (y_min + y_max)/2; }
+  T x_center() const { return (x_min + x_max)/2; }
+  T y_center() const { return (y_min + y_max)/2; }
   
   Region<T> subregion(Quadrant q) {
     if (q == Quadrant::NE) return Region{x_center(), x_max, y_center(), y_max};
@@ -124,16 +124,16 @@ struct QuadtreeNode {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Barnes Hut Tree
+// Quadtree
 ////////////////////////////////////////////////////////////////////////////////
-struct BarnesHutTree {
+struct Quadtree {
   const Region<double> region;
   QuadtreeNode* root;
 
-  BarnesHutTree(const Region<double>& region);
-  BarnesHutTree(const BarnesHutTree&) = delete;
-  ~BarnesHutTree();
-  BarnesHutTree& operator=(const BarnesHutTree&) = delete;
+  Quadtree(const Region<double>& region);
+  Quadtree(const Quadtree&) = delete;
+  ~Quadtree();
+  Quadtree& operator=(const Quadtree&) = delete;
 
   bool insert(Particle& p);
 
@@ -142,13 +142,15 @@ struct BarnesHutTree {
   void destroy(QuadtreeNode* node);
 };
 
-BarnesHutTree::BarnesHutTree(const Region<double>& r) : region(r) {}
+Quadtree::Quadtree(const Region<double>& r) 
+    : region(r), 
+      root(nullptr) {}
 
-BarnesHutTree::~BarnesHutTree() {
+Quadtree::~Quadtree() {
   destroy(root);
 }
 
-void BarnesHutTree::destroy(QuadtreeNode* root) {
+void Quadtree::destroy(QuadtreeNode* root) {
   if (root == nullptr) return;
   destroy(root->quadrants[Quadrant::NE]);
   destroy(root->quadrants[Quadrant::NW]);
@@ -161,7 +163,7 @@ void BarnesHutTree::destroy(QuadtreeNode* root) {
 // Returns: 
 //   true if the particle was inside the bounds and inserted, or
 //   false if the particle is not in the bounds (also sets mass = -1)
-bool BarnesHutTree::insert(Particle& p) {
+bool Quadtree::insert(Particle& p) {
   // If particle p is inside the root region, insert it into the quadtree
   if(isContained(p, region)) {
     // Use private helping insert method
@@ -177,13 +179,15 @@ bool BarnesHutTree::insert(Particle& p) {
 
 // Recursively inserts the particle into the Quadtree, starting at the 
 // given node (root) and corresponding to the region passed in.
-QuadtreeNode* BarnesHutTree::insert(QuadtreeNode* root, 
-                                    Region<double> region, 
-                                    Particle* p) {
-  std::cout << "Frame:\n";
-  std::cout << root->toString();
+QuadtreeNode* Quadtree::insert(QuadtreeNode* root, 
+                               Region<double> region, 
+                               Particle* p) {
+  
+  std::cout << "\nFrame:" << '\n';
+  std::cout << (root != nullptr ? root->toString() : "nullptr\n");
   std::cout << "args: " << region.toString() << ", "
-                        << "particle: " << p << '\n'; // address
+                        << p->toStringMatchInputOrder(true) << '\n'; // address
+  std::cin.get(); // wait for keypress //<!> temp
   // If node is null, create new node for this region containing the particle
   if(root == nullptr) {
     std::cout << "Node* is null, need new node...\n";
@@ -205,7 +209,7 @@ QuadtreeNode* BarnesHutTree::insert(QuadtreeNode* root,
     std::cout << "increased mass to " << root->total_mass << '\n';
     // Insert into appropriate quadrant
     Quadrant q = quadrant(*p, region);
-    std::cout << "inserting " << p->toString() << " in quadrant " << q << '\n';
+    std::cout << "inserting " << p->toStringMatchInputOrder(true) << " in quadrant " << q << '\n';
     root = insert(root->quadrants[q], root->region.subregion(q), p);
     return root;
   }

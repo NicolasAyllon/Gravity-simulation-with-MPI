@@ -12,18 +12,21 @@ struct Particle {
   std::string toString() {
     std::stringstream ss;
     ss << "Particle: [idx: "      << index  << ", "
-                  << "mass:"      << mass   << ", "
+                  << "mass: "      << mass   << ", "
                   << "position: " << position.toString() << ", "
                   << "velocity: " << velocity.toString() << "]";
     return ss.str();
   }
 
-  std::string toStringMatchInputOrder() {
+  std::string toStringMatchInputOrder(bool show_address) {
     std::stringstream ss;
     ss << "Particle: [idx: "      << index  << ", "
                   << "position: " << position.toString() << ", "
-                  << "mass:"      << mass   << ", "
+                  << "mass: "      << mass   << ", "
                   << "velocity: " << velocity.toString() << "]";
+    if(show_address) {
+      ss << " @ " << this;
+    }
     return ss.str();
   }
 };
