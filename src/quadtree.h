@@ -180,6 +180,10 @@ bool Quadtree::insert(Particle& p) {
 
 // Recursively inserts the particle into the Quadtree, starting at the 
 // given node (root) and corresponding to the region passed in.
+// 
+// Note: Each QuadtreeNode contains its region as a member, but insert uses
+// the region as a parameter on the call stack, to be available for
+// constructing a new node when root == nullptr.
 QuadtreeNode* Quadtree::insert(QuadtreeNode* root, 
                                Region<double> region, 
                                Particle* p) {
@@ -211,7 +215,7 @@ QuadtreeNode* Quadtree::insert(QuadtreeNode* root,
     // Insert into appropriate quadrant
     Quadrant q = quadrant(*p, region);
     std::cout << "inserting " << p->toStringMatchInputOrder(true) << " in quadrant " << q << '\n';
-    root = insert(root->quadrants[q], root->region.subregion(q), p);
+    root->quadrants[q] = insert(root->quadrants[q], region.subregion(q), p);
     return root;
   }
 
