@@ -31,6 +31,7 @@ struct Region {
 
   T x_center() const { return (x_min + x_max)/2; }
   T y_center() const { return (y_min + y_max)/2; }
+  T side_length() const { return x_max - x_min; } // Assume square
   
   Region<T> subregion(Quadrant q) {
     if (q == Quadrant::NE) return Region{x_center(), x_max, y_center(), y_max};
