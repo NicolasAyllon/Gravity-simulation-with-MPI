@@ -91,8 +91,8 @@ struct QuadtreeNode {
         num_particles(0),
         com(Vec2<double>(0, 0)) 
   {
-    std::cout << "Constructing quadtree node, empty:\n";
-    std::cout << toString();
+    // std::cout << "Constructing quadtree node, empty:\n";
+    // std::cout << toString();
   }
 
   // Construct a quadtree node the region containing the 1 particle passed in
@@ -104,8 +104,8 @@ struct QuadtreeNode {
         num_particles(1),
         com(p->position)
   {
-    std::cout << "Constructing quadtree node, with particle:\n";
-    std::cout << toString();
+    // std::cout << "Constructing quadtree node, with particle:\n";
+    // std::cout << toString();
   }
   
   std::string toString() {
@@ -188,40 +188,44 @@ QuadtreeNode* Quadtree::insert(QuadtreeNode* root,
                                Region<double> region, 
                                Particle* p) {
   
-  std::cout << "\nFrame:" << '\n';
-  std::cout << (root != nullptr ? root->toString() : "nullptr\n");
-  std::cout << "args: " << region.toString() << ", "
-                        << p->toStringMatchInputOrder(true) << '\n'; // address
-  std::cin.get(); // wait for keypress //<!> temp
+  // std::cout << "\nFrame:" << '\n';
+  // std::cout << (root != nullptr ? root->toString() : "nullptr\n");
+  // std::cout << "args: " << region.toString() << ", "
+  //                    << p->toStringMatchInputOrder(true) << '\n'; // address
+  // std::cin.get(); // wait for keypress
   // If node is null, create new node for this region containing the particle
   if(root == nullptr) {
-    std::cout << "Node* is null, need new node...\n";
+    // std::cout << "Node* is null, need new node...\n";
     return new QuadtreeNode(region, p); 
   };
 
   // Internal node (contains no particles directly) or newly empty leaf node
   if(root->particle == nullptr) {
-    std::cout << "Internal node, update center of mass...\n";
+    // std::cout << "Internal node, update center of mass...\n";
     // Update center of mass (com)
     auto n = (root->com)*(root->total_mass) + (p->mass)*(p->position);
     auto d = root->total_mass + p->mass;
     root->com = n/d;
-    std::cout << "new com: " << root->com.toString() << '\n';
+    // std::cout << "new com: " << root->com.toString() << '\n';
     // Update number of particles & total mass
     root->num_particles++;
-    std::cout << "incremented num_particles to " << root->num_particles << '\n';
+    // std::cout << "incremented num_particles to " << root->num_particles << '\n';
     root->total_mass += p->mass;
-    std::cout << "increased mass to " << root->total_mass << '\n';
+    // std::cout << "increased mass to " << root->total_mass << '\n';
     // Insert into appropriate quadrant
     Quadrant q = quadrant(*p, region);
-    std::cout << "inserting " << p->toStringMatchInputOrder(true) << " in quadrant " << q << '\n';
+    // std::cout << "inserting " << p->toStringMatchInputOrder(true) << " in quadrant " << q << '\n';
     root->quadrants[q] = insert(root->quadrants[q], region.subregion(q), p);
     return root;
   }
 
   // Leaf node (already contains particle)
   else { // root->particle != nullptr
-    std::cout << "Leaf node, need to remove particle here and reinsert both\n";
+    // std::cout << "Leaf node, need to remove particle here and reinsert both\n";
+    // If particles have same position, no amount of zoom will separate them.
+    // Stop trying to add the new particle and return this node unchanged.
+    if(coincident(p, root->particle)) { return root; }
+
     // Save particle that was here & remove it
     Particle* prev = root->particle;
     root->particle = nullptr;

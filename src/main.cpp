@@ -14,14 +14,14 @@ int main(int argc, char* argv[]) {
   // Read file
   std::vector<Particle> particles = read_file(opts.inputfilename);
   // size_t N = particles.size();
-
-  // For i = 0, 1, 2, ...steps-1
+ //  std::cout << "vector<Particle>: len: " << particles.size() << ", cap: " << particles.capacity() << '\n';
 
   // Create Quadtree for rectangular region (0<=x<=4, 0<=y<=4)
   Region<double> region = {0, 4, 0, 4};
   Quadtree quadtree(region);
   // Insert particles
   for (Particle& particle : particles) {
+    std::cout << "[Loop] about to insert " << particle.toStringMatchInputOrder(true) << '\n';
     quadtree.insert(particle);
   }
   return 0; // <!> end here for now
