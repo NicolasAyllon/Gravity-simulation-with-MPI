@@ -1,6 +1,7 @@
 #include "io.h"
 #include "particle.h"
 #include "vector.h"
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -19,6 +20,7 @@ std::vector<Particle> read_file(char* inputfilename) {
   std::stringstream ss(line);
   int num_particles = 0;
   ss >> num_particles;
+  // std::cout << "num_particles: " << num_particles << '\n';
 
   // Create a vector with this capacity reserved
   std::vector<Particle> particles;
@@ -26,13 +28,18 @@ std::vector<Particle> read_file(char* inputfilename) {
 
   // Reuse line to read data for all particles
   while(std::getline(ifs, line)) {
+    // std::cout << "line: " << line << '\n';
+    // Ignore empty lines
+    if(line.empty()) { continue; }
     std::stringstream ss(line);
     // Each line contains ordered data:
-    Particle p;
+    Particle p; // uninitialized
+    // std::cout << "before initialization: " << p.toString() << '\n';
     ss >> p.index;
     ss >> p.position.x >> p.position.y;
     ss >> p.mass;
     ss >> p.velocity.x >> p.velocity.y;
+    // std::cout << "after initialization: " << p.toString() << '\n';
     // Add to vector
     particles.emplace_back(p);
   }

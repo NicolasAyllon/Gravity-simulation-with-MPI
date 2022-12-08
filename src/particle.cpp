@@ -1,5 +1,16 @@
 #include "particle.h"
 
+// Particle::Particle() 
+//     : index(0), 
+//       mass(0), 
+//       position(Vec2<double>()), 
+//       velocity(Vec2<double>()) {};
+
+bool coincident(Particle* a, Particle* b) {
+  return a->position.x == b->position.x && 
+         a->position.y == b->position.y;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Physics update
 ////////////////////////////////////////////////////////////////////////////////
