@@ -31,7 +31,13 @@ Vec2<double> gravity(double m1, double m2, Vec2<double> r1, Vec2<double> r2) {
   return G*m1*m2*(r2-r1)/(d*d*d);
 }
 
-void calc_net_force(Particle* p, QuadtreeNode* node, double theta,
+// Recursively traverses the quadtree in-order and writes the result in the
+// output parameter f.
+// 
+// For each nodes containing only 1 particle or meeting the approximation
+// threshold, the gravitational force (or approximation) is computed and added
+// to the net force. Otherwise, the function examines the nodes below.
+void calc_net_force(const Particle* p, QuadtreeNode* node, double theta,
                     Vec2<double>& f) {
   // If the node is nullptr, do nothing and return.
   if (node == nullptr) return;
@@ -39,9 +45,8 @@ void calc_net_force(Particle* p, QuadtreeNode* node, double theta,
   if (node->num_particles == 1) {
     Particle* q = node->particle;
     // A particle does not exert force on itself.
-    if (q->index != p->index) {
+    if (q->index != p->index)
       f += gravity(p->mass, q->mass, p->position, q->position);
-    }
     return;
   }
   // If s/d < theta, approximate the force from all particles in this node
@@ -61,7 +66,9 @@ void calc_net_force(Particle* p, QuadtreeNode* node, double theta,
   calc_net_force(p, node->quadrants[Quadrant::SE], theta, f);
 }
 
-Vec2<double> calc_net_force(Particle p, Quadtree tree, double theta) {
+// Calculate the net force on particle p from all other particles in the
+// quadtree using the given value for theta as a threshold for approximations.
+Vec2<double> calc_net_force(const Particle& p, Quadtree tree, double theta) {
   Vec2<double> force = {0,0};
   calc_net_force(&p, tree.root, theta, force);  
   return force;
