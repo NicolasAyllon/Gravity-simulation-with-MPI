@@ -23,7 +23,7 @@ void Particle::update(Vec2<double> force, double dt) {
   r = r + v*dt + 0.5*a*dt*dt;
   v = v + a*dt;
   // Update position & velocity (Method 2: 7 ops)
-  // r = r + (v + 0.5*a*dt)*dt;  // Alternate with 5 ops instead of 6
+  // r = r + (v + 0.5*a*dt)*dt;  // Save 1 op using by factoring out dt
   // v = v + a*dt;
 }
 

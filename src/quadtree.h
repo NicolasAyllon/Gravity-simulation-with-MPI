@@ -223,7 +223,7 @@ QuadtreeNode* Quadtree::insert(QuadtreeNode* root,
   else { // root->particle != nullptr
     // std::cout << "Leaf node, need to remove particle here and reinsert both\n";
     // If particles have same position, no amount of zoom will separate them.
-    // Stop trying to add the new particle and return this node unchanged.
+    // Do not add the coincident particle and return this node unchanged.
     if(coincident(p, root->particle)) { return root; }
 
     // Save particle that was here & remove it
