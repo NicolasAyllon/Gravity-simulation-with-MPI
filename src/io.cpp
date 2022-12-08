@@ -30,7 +30,7 @@ std::vector<Particle> read_file(char* inputfilename) {
   while(std::getline(ifs, line)) {
     // std::cout << "line: " << line << '\n';
     // Ignore empty lines
-    if(line.empty()) { continue; }
+    if (line.empty()) { continue; }
     std::stringstream ss(line);
     // Each line contains ordered data:
     Particle p; // uninitialized

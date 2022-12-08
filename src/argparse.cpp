@@ -53,7 +53,7 @@ std::string get_undefined_opts_string(struct options_t* opts) {
 void get_opts(int argc, char** argv, struct options_t* opts) {
   // print_opts(opts);
 
-  if(argc == 1) {
+  if (argc == 1) {
     std::cout << "Usage:"                   << std::endl;
     std::cout << "\t-i <inputfilename>"     << std::endl;
     std::cout << "\t-o <outputfilename>"    << std::endl;
@@ -114,7 +114,7 @@ void get_opts(int argc, char** argv, struct options_t* opts) {
   // std::cout << "We made it out of the while loop." << std::endl;
   //print_opts(opts);
 
-  if(contains_undefined_opts(opts)) {
+  if (contains_undefined_opts(opts)) {
     std::cout << "Error: these options have missing or invalid values: " 
               <<  get_undefined_opts_string(opts) << std::endl;
     exit(EXIT_FAILURE);

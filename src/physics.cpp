@@ -10,7 +10,7 @@ constexpr double G = 0.001;
 // Returns the force exerted on particle p due to other particle
 Vec2<double> gravity(Particle* p, Particle* other) {
   // A particle does not exert force on itself.
-  if(p == other) return {0,0};
+  if (p == other) return {0,0};
   // Compute separation distance d. Use r_limit if d < r_limit.
   double d = dist(p->position, other->position);
   d = std::max(d, r_limit);
@@ -34,22 +34,24 @@ Vec2<double> gravity(double m1, double m2, Vec2<double> r1, Vec2<double> r2) {
 void calc_net_force(Particle* p, QuadtreeNode* node, double theta,
                     Vec2<double>& f) {
   // If the node is nullptr, do nothing and return.
-  if(node == nullptr) return;
+  if (node == nullptr) return;
   // If there is only 1 particle, compute force due to it and add to f.
-  if(node->num_particles == 1) {
+  if (node->num_particles == 1) {
     Particle* q = node->particle;
     // A particle does not exert force on itself.
-    if(q->index != p->index) {
+    if (q->index != p->index) {
       f += gravity(p->mass, q->mass, p->position, q->position);
     }
+    return;
   }
   // If s/d < theta, approximate the force from all particles in this node
   // as that from a point mass located at the center of mass with a mass equal
   // to the total mass of all particles within.
   double s = node->region.side_length();
   double d = dist(p->position, node->com);
-  if(s/d < theta) {
+  if (s/d < theta) {
     f += gravity(p->mass, node->total_mass, p->position, node->com);
+    return;
   }
   // Otherwise, no approximation can be made, and we need to recursively
   // examine all nodes under this one.

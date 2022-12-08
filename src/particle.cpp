@@ -48,7 +48,7 @@ std::string Particle::toStringMatchInputOrder(bool show_address) {
                 << "position: " << position.toString() << ", "
                 << "mass: "      << mass   << ", "
                 << "velocity: " << velocity.toString() << "]";
-  if(show_address) {
+  if (show_address) {
     ss << " @ " << this;
   }
   return ss.str();

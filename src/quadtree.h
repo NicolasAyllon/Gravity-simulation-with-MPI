@@ -62,7 +62,7 @@ bool isContained(const Particle& p, const Region<T>& r) {
 // because this this was checked before it was inserted in the quadtree.
 template <typename T>
 Quadrant quadrant(const Particle& p, const Region<T>& r) {
-  if(p.position.y > r.y_center()) {
+  if (p.position.y > r.y_center()) {
     return (p.position.x < r.x_center() ? Quadrant::NW : Quadrant::NE);
   } else {
     return (p.position.x < r.x_center() ? Quadrant::SW : Quadrant::SE);
@@ -77,7 +77,7 @@ struct QuadtreeNode {
   Region<double> region;  // Bounds
   Particle* particle;     // -internal node: nullptr
                           // -leaf node: pointer to particle
-  std::array<QuadtreeNode*, 4> quadrants;
+  std::array<QuadtreeNode*, 4> quadrants; // Array of pointers to child nodes
 
   double total_mass;  // Sum of particle masses in this region
   int num_particles;  // Number of particles in this region
@@ -167,7 +167,7 @@ void Quadtree::destroy(QuadtreeNode* root) {
 //   false if the particle is not in the bounds (also sets mass = -1)
 bool Quadtree::insert(Particle& p) {
   // If particle p is inside the root region, insert it into the quadtree
-  if(isContained(p, region)) {
+  if (isContained(p, region)) {
     // Use private helping insert method
     root = insert(root, region, &p);
     return true;
@@ -195,13 +195,13 @@ QuadtreeNode* Quadtree::insert(QuadtreeNode* root,
   //                    << p->toStringMatchInputOrder(true) << '\n'; // address
   // std::cin.get(); // wait for keypress
   // If node is null, create new node for this region containing the particle
-  if(root == nullptr) {
+  if (root == nullptr) {
     // std::cout << "Node* is null, need new node...\n";
     return new QuadtreeNode(region, p); 
   };
 
   // Internal node (contains no particles directly) or newly empty leaf node
-  if(root->particle == nullptr) {
+  if (root->particle == nullptr) {
     // std::cout << "Internal node, update center of mass...\n";
     // Update center of mass (com)
     auto n = (root->com)*(root->total_mass) + (p->mass)*(p->position);
@@ -225,7 +225,7 @@ QuadtreeNode* Quadtree::insert(QuadtreeNode* root,
     // std::cout << "Leaf node, need to remove particle here and reinsert both\n";
     // If particles have same position, no amount of zoom will separate them.
     // Do not add the coincident particle and return this node unchanged.
-    if(coincident(p, root->particle)) { return root; }
+    if (coincident(p, root->particle)) { return root; }
 
     // Save particle that was here & remove it
     Particle* prev = root->particle;
