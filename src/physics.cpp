@@ -68,8 +68,16 @@ void calc_net_force(const Particle* p, QuadtreeNode* node, double theta,
 
 // Calculate the net force on particle p from all other particles in the
 // quadtree using the given value for theta as a threshold for approximations.
+// Note: force vector is returned by value
 Vec2<double> calc_net_force(const Particle& p, const Quadtree& tree, double theta) {
   Vec2<double> force = {0,0};
   calc_net_force(&p, tree.root, theta, force);  
   return force;
+}
+
+// Calculate the net force on particle p from all other particles in the
+// quadtree using the given value of as a threshold for approximations.
+// Note: force vector is an output parameter
+void calc_net_force(const Particle& p, const Quadtree& tree, double theta, Vec2<double>& f) {
+  calc_net_force(&p, tree.root, theta, f);
 }
