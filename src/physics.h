@@ -5,6 +5,6 @@
 #include "quadtree.h"
 #include "vector.h"
 
-std::vector<Vec2<double>> calculate_forces(Particle, Quadtree);
+Vec2<double> calc_net_force(const Particle& p, const Quadtree& tree, double theta);
 
 #endif // _PHYSICS_H

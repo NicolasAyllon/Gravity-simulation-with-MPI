@@ -4,6 +4,7 @@
 #include "argparse.h"
 #include "io.h"
 #include "quadtree.h"
+#include "physics.h"
 
 int main(int argc, char* argv[]) {
 
@@ -13,7 +14,7 @@ int main(int argc, char* argv[]) {
 
   // Read file
   std::vector<Particle> particles = read_file(opts.inputfilename);
-  // size_t N = particles.size();
+  size_t N = particles.size();
  //  std::cout << "vector<Particle>: len: " << particles.size() << ", cap: " << particles.capacity() << '\n';
 
   // Create Quadtree for rectangular region (0<=x<=4, 0<=y<=4)
@@ -24,18 +25,23 @@ int main(int argc, char* argv[]) {
     std::cout << "[Loop] about to insert " << particle.toStringMatchInputOrder(true) << '\n';
     quadtree.insert(particle);
   }
-  return 0; // <!> end here for now
 
-  // For each particle, compute force
-  // std::vector<Vec2<double>> forces;
-  // int start = 0; int end = N;
-  // for (int i = start; i < end; ++i) {
-  //   forces[i] = calculate_force(particles[i], quadtree);
-  // }
-  // // Calculate new position
-  // for (int i = start; i < end; ++i) {
-  //   particles[i].update(forces[i], dt);
-  // }
+  // For steps = 0..num_steps-1
+  for (int s = 0; s < opts.steps; ++s) {
+    // For each particle, compute force
+    std::vector<Vec2<double>> forces;
+    int start = 0; int end = N;
+    for (int i = start; i < end; ++i) {
+      forces[i] = calc_net_force(particles[i], quadtree, opts.theta);
+    }
+    // Calculate new position
+    for (int i = start; i < end; ++i) {
+      particles[i].update(forces[i], opts.dt);
+    }
+  }
+
+  // Write output
+  write_file(particles, opts.outputfilename);
 
   return 0; // <!> end here for now
 

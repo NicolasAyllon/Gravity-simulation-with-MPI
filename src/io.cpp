@@ -45,3 +45,19 @@ std::vector<Particle> read_file(char* inputfilename) {
   }
   return particles;
 }
+
+void write_file(const std::vector<Particle>& particles, char* outputfilename) {
+  // Overwrite the file's previous content
+  std::ofstream ofs(outputfilename, std::ios_base::trunc);
+  if (!ofs.is_open()) {
+    perror("Unable to open file");
+    exit(EXIT_FAILURE);
+  }
+  // TODO: Print time
+  for (const Particle& particle : particles) {
+    ofs << particle.index << " "
+        << particle.position.x << " " << particle.position.y << " "
+        << particle.mass
+        << particle.velocity.x << " " << particle.velocity.y << '\n';
+  }
+}
