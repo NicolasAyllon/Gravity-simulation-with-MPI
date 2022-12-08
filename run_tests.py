@@ -4,11 +4,12 @@ PROGRAMS = [
   "nbody"
 ]
 
-IOFILES = {
-  # "nb-2-close.txt" : "nb-2-close-output.txt"  ,
-  # "nb-10.txt"     : "nb-10-output.txt"        #,
-  # "nb-100.txt"    : "nb-100-output.txt"       #,
-  "nb-100000.txt" : "nb-100000-output.txt"
+# File names without ".txt" extension, for convenient output file naming
+INPUTFILES = {
+  # "nb-2-close"  #,
+  "nb-10"         #,
+  # "nb-100"      #,
+  # "nb-100000"   #,
 }
 
 # Maybe change to arrays later
@@ -19,12 +20,12 @@ DT_TIMESTEP = 0.005
 NUM_TESTS = 1
 
 for program in PROGRAMS:
-    for inputfilename, outputfilename in IOFILES.items():
+    for filename in INPUTFILES:
         for i in range(NUM_TESTS):
             subprocess.call([
               "bin/{}".format(program),
-              "-i", "input/{}".format(inputfilename),
-              "-o", "output/{}".format(outputfilename),
+              "-i", "input/{}.txt".format(filename),
+              "-o", "output/{}-{}.txt".format(filename, STEPS),
               # "-V", # visualization is not used
               "-s", str(STEPS),
               "-t", str(THETA),

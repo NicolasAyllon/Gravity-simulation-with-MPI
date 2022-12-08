@@ -54,10 +54,13 @@ void write_file(const std::vector<Particle>& particles, char* outputfilename) {
     exit(EXIT_FAILURE);
   }
   // TODO: Print time
+  // Print number of particles on first line
+  ofs << particles.size() << '\n';
+  // Print particle index, position, mass, and velocity on each line
   for (const Particle& particle : particles) {
     ofs << particle.index << " "
         << particle.position.x << " " << particle.position.y << " "
-        << particle.mass
+        << particle.mass << " "
         << particle.velocity.x << " " << particle.velocity.y << '\n';
   }
 }
