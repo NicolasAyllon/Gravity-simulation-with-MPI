@@ -16,7 +16,54 @@ int main(int argc, char* argv[]) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   std::cout << "I am process " << rank << " of " << size << '\n';
-  // MPI_Send()
+
+  // MPI send/receive of std::vector<Particle> needs Particle and Vec2 defined.
+  // Define Vec2
+  // MPI_Datatype dt_Vec2;
+  // MPI_Type_contiguous(2, MPI_DOUBLE, &dt_Vec2);
+  // MPI_Type_commit(&dt_Vec2);
+  // Define Particle
+  // (not yet implemented)
+
+  if (rank == 0) {
+    std::vector<Particle> v_test;
+    v_test.reserve(3);
+    v_test.emplace_back(Particle{0, 3.1, {1.2, 2.2}, {0, 0}});
+    v_test.emplace_back(Particle{0, 4.2, {8.2, 4.2}, {0, 0}});
+    v_test.emplace_back(Particle{0, 5.9, {3.2, 7.2}, {0, 0}});
+
+    int N = v_test.size();
+    MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    void* data = v_test.data(); 
+    int n_bytes = N * sizeof(Particle);
+    MPI_Bcast(data, n_bytes, MPI_BYTE, 0, MPI_COMM_WORLD);
+  }
+  else {
+    int N = 0;
+    MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    printf("Process %d received N = %d\n", rank, N);
+
+    std::vector<Particle> v(N);
+    void* data = v.data();
+    int n_bytes = N * sizeof(Particle);
+    MPI_Bcast(data, n_bytes, MPI_BYTE, 0, MPI_COMM_WORLD);
+    printf("Process %d received vector<Particle>: size %lu, cap %lu\n", rank, v.size(), v.capacity());
+    for (int i = 0; i < N; ++i) {
+      printf("Process %d: v[%d] = %s\n", rank, i, v[i].toStringMatchInputOrder(true).c_str());
+    }
+  }
+
+  // Rank 0 (Coordinator)
+    // 1. Send size to all
+
+    // 2. Send data to all
+
+  // Rank > 0 (Worker)
+    // 1. Receive size
+
+    // 2. Receive data
+
   MPI_Finalize();
   return 0; // <!> end for test MPI
 
