@@ -39,14 +39,26 @@ Vec2<double> gravity(double m1, double m2, Vec2<double> r1, Vec2<double> r2) {
 // to the net force. Otherwise, the function examines the nodes below.
 void calc_net_force(const Particle* p, QuadtreeNode* node, double theta,
                     Vec2<double>& f) {
+  // Print for debugging:
+  std::cout << "Goodbye world\n";
+  std::cout << "Node:" << (node != nullptr ? node->toString() : "nullptr\n");
+  std::cin.get();
   // If the node is nullptr, do nothing and return.
-  if (node == nullptr) return;
+  if (node == nullptr) {
+    std::cout << "Null node, returning...\n";
+    return;
+  }
   // If there is only 1 particle, compute force due to it and add to f.
   if (node->num_particles == 1) {
+    std::cout << "Only 1 particle\n";
     Particle* q = node->particle;
     // A particle does not exert force on itself.
-    if (q->index != p->index)
+    if (q->index != p->index) {
+      std::cout << "Particle" << p->index << ": calculating gravity from " << q->index << '\n';
       f += gravity(p->mass, q->mass, p->position, q->position);
+    } else {
+      std::cout << "Particle" << p->index << " gets no force from itself, Particle " << q->index << ", returning...\n";
+    }
     return;
   }
   // If s/d < theta, approximate the force from all particles in this node
@@ -54,9 +66,16 @@ void calc_net_force(const Particle* p, QuadtreeNode* node, double theta,
   // to the total mass of all particles within.
   double s = node->region.side_length();
   double d = dist(p->position, node->com);
+  std::cout << "Multiple particles\n";
+  std::cout << "s/d = " << s << "/" << d << " = " << s/d;
   if (s/d < theta) {
+    std::cout << " < " << theta 
+              << ", approximate with com" << node->com.toString() 
+              << ", total mass " << node->total_mass << '\n';
     f += gravity(p->mass, node->total_mass, p->position, node->com);
     return;
+  } else {
+    std::cout << " >= " << theta << ", look at quadrants below." << '\n';
   }
   // Otherwise, no approximation can be made, and we need to recursively
   // examine all nodes under this one.
@@ -67,7 +86,7 @@ void calc_net_force(const Particle* p, QuadtreeNode* node, double theta,
 }
 
 // Calculate the net force on particle p from all other particles in the
-// quadtree using the given value for theta as a threshold for approximations.
+// quadtree using the given value of theta as a threshold for approximations.
 // Note: force vector is returned by value
 Vec2<double> calc_net_force(const Particle& p, const Quadtree& tree, double theta) {
   Vec2<double> force = {0,0};
@@ -76,8 +95,11 @@ Vec2<double> calc_net_force(const Particle& p, const Quadtree& tree, double thet
 }
 
 // Calculate the net force on particle p from all other particles in the
-// quadtree using the given value of as a threshold for approximations.
+// quadtree using the given value of theta as a threshold for approximations.
 // Note: force vector is an output parameter
 void calc_net_force(const Particle& p, const Quadtree& tree, double theta, Vec2<double>& f) {
+  std::cout << p.toStringMatchInputOrder(true) << '\n';
+  std::cout << "tree.root: " << tree.root << '\n';
+  std::cout << "f: " << f.toString() << '\n';
   calc_net_force(&p, tree.root, theta, f);
 }

@@ -15,7 +15,7 @@ struct Vec2 {
   Vec2(const Vec2& v) = default;
   Vec2& operator=(const Vec2& rhs);
 
-  std::string toString();
+  std::string toString() const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ Vec2<T>& Vec2<T>::operator=(const Vec2& rhs) {
 // String
 ////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-std::string Vec2<T>::toString() {
+std::string Vec2<T>::toString() const {
   std::stringstream ss;
   ss << "(" << x << ", " << y << ")";
   return ss.str();
@@ -48,7 +48,7 @@ std::string Vec2<T>::toString() {
 // Vector addition
 template <typename T>
 Vec2<T> operator+(const Vec2<T>& v1, const Vec2<T>& v2) {
-  return Vec2{
+  return Vec2<T>{
     v1.x + v2.x,
     v1.y + v2.y
   };
@@ -57,7 +57,7 @@ Vec2<T> operator+(const Vec2<T>& v1, const Vec2<T>& v2) {
 // Vector subtraction
 template <typename T>
 Vec2<T> operator-(const Vec2<T>& v1, const Vec2<T>& v2) {
-  return Vec2{
+  return Vec2<T>{
     v1.x - v2.x,
     v1.y - v2.y
   };
@@ -67,7 +67,7 @@ Vec2<T> operator-(const Vec2<T>& v1, const Vec2<T>& v2) {
 // Right multiplication of vector v by scalar k: vk
 template <typename T>
 Vec2<T> operator*(const Vec2<T>& v, T k) {
-  return Vec2{
+  return Vec2<T>{
     v.x * k,
     v.y * k
   };
@@ -77,7 +77,7 @@ Vec2<T> operator*(const Vec2<T>& v, T k) {
 // Left multiplication of vector v by scalar k: kv
 template <typename T>
 Vec2<T> operator*(T k, const Vec2<T>& v) {
-  return Vec2{
+  return Vec2<T>{
     k * v.x,
     k * v.y
   };
@@ -86,7 +86,7 @@ Vec2<T> operator*(T k, const Vec2<T>& v) {
 // Vector division by scalar: v/k
 template <typename T>
 Vec2<T> operator/(const Vec2<T>& v, T k) {
-  return Vec2{
+  return Vec2<T>{
     v.x/k,
     v.y/k
   };

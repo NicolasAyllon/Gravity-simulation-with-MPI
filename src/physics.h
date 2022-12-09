@@ -1,6 +1,7 @@
 #ifndef _PHYSICS_H
 #define _PHYSICS_H
 
+#include <iostream>
 #include <vector>
 #include "quadtree.h"
 #include "vector.h"

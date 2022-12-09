@@ -29,16 +29,18 @@ QuadtreeNode::QuadtreeNode(Region<double> r, Particle* p)
 
 std::string QuadtreeNode::toString() {
     std::stringstream ss;
-    ss << "This node: "     << this                           << '\n';
-    ss << "Region: "        << region.toString()              << '\n';
-    ss << "particle: "      << particle                       << '\n';
-    ss << "quadrants: ["    << quadrants[Quadrant::NE] << ", "
+    ss << "This node: "     << this                           << ", "
+       << "Region: "        << region.toString()              << ", "
+       << "particle: "      << (particle != nullptr ?       
+                                particle->toStringMatchInputOrder(true) : 
+                                "nullptr") << ", "
+       << "quadrants: ["    << quadrants[Quadrant::NE] << ", "
                             << quadrants[Quadrant::NW] << ", "
                             << quadrants[Quadrant::SW] << ", "
-                            << quadrants[Quadrant::SE] << "]" << '\n';
-    ss << "total_mass: "    << total_mass                     << '\n';
-    ss << "num_particles: " << num_particles                  << '\n';
-    ss << "com: "           << com.toString()                 << '\n';
+                            << quadrants[Quadrant::SE] << "]" << ", "
+       << "total_mass: "    << total_mass                     << ", "
+       << "num_particles: " << num_particles                  << ", "
+       << "com: "           << com.toString()                 << '\n';
     return ss.str();
 }
 

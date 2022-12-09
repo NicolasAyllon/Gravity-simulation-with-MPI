@@ -33,7 +33,7 @@ void Particle::update(Vec2<double> force, double dt) {
 // String
 ////////////////////////////////////////////////////////////////////////////////
 
-std::string Particle::toString() {
+std::string Particle::toString() const {
   std::stringstream ss;
   ss << "Particle: [idx: "      << index  << ", "
                 << "mass: "      << mass   << ", "
@@ -42,7 +42,7 @@ std::string Particle::toString() {
   return ss.str();
 }
 
-std::string Particle::toStringMatchInputOrder(bool show_address) {
+std::string Particle::toStringMatchInputOrder(bool show_address) const {
   std::stringstream ss;
   ss << "Particle: [idx: "      << index  << ", "
                 << "position: " << position.toString() << ", "

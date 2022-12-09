@@ -4,7 +4,9 @@
 #include "argparse.h"
 #include "io.h"
 #include "quadtree.h"
+#include "particle.h"
 #include "physics.h"
+#include "vector.h"
 
 int main(int argc, char* argv[]) {
 
@@ -15,7 +17,7 @@ int main(int argc, char* argv[]) {
   // Read file
   std::vector<Particle> particles = read_file(opts.inputfilename);
   size_t N = particles.size();
- //  std::cout << "vector<Particle>: len: " << particles.size() << ", cap: " << particles.capacity() << '\n';
+  std::cout << "vector<Particle>: len: " << particles.size() << ", cap: " << particles.capacity() << '\n';
 
   // For steps = 0..num_steps-1
   for (int s = 0; s < opts.steps; ++s) {
@@ -26,20 +28,27 @@ int main(int argc, char* argv[]) {
 
     // Insert particles
     for (Particle& particle : particles) {
-      // std::cout << "[Loop] about to insert " << particle.toStringMatchInputOrder(true) << '\n';
+      std::cout << "[Loop] about to insert " << particle.toStringMatchInputOrder(true) << '\n';
       quadtree.insert(particle);
     }
 
     // For each particle, compute force
     std::vector<Vec2<double>> forces(N, {0,0});
+    for (Vec2<double> f : forces) {
+      std::cout << f.toString() << '\n';
+    }
     // Alternatively std::vector<Vec2<double>> forces(); forces.reserve(N);
     int start = 0; int end = N;
+    std::cout << "start: " << start << ", end: " << end << '\n';
     for (int i = start; i < end; ++i) {
+      std::cout << "i: " << i << '\n';
+      // [!] What is wrong at this point in the program?
       calc_net_force(particles[i], quadtree, opts.theta, forces[i]);
       std::cout << particles[i].toStringMatchInputOrder(true) << ", Force: " << forces[i].toString() << '\n';
     }
 
     // Calculate new position
+    std::cout << "start: " << start << ", end: " << end << '\n';
     for (int i = start; i < end; ++i) {
       particles[i].update(forces[i], opts.dt);
     }
