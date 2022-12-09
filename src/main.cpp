@@ -10,6 +10,16 @@
 
 int main(int argc, char* argv[]) {
 
+  std::cout << "hello world" << std::endl;
+  MPI_Init(&argc, &argv);
+  int rank, size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_size(MPI_COMM_WORLD, &size);
+  std::cout << "I am process " << rank << " of " << size << '\n';
+  // MPI_Send()
+  MPI_Finalize();
+  return 0; // <!> end for test MPI
+
   // Get options
   struct options_t opts;
   get_opts(argc, argv, &opts); print_opts(&opts);
@@ -59,19 +69,8 @@ int main(int argc, char* argv[]) {
   }
 
   // Write output
-  write_file(particles, opts.outputfilename);
+  write_file(particles, opts.outputfilename, false);
 
   return 0; // <!> end here for now
 
-
-
-
-  std::cout << "hello world" << std::endl;
-  MPI_Init(&argc, &argv);
-  int rank, size;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  MPI_Comm_size(MPI_COMM_WORLD, &size);
-  // MPI_Send()
-  MPI_Finalize();
-  // return 0;
 }

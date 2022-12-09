@@ -46,7 +46,7 @@ std::vector<Particle> read_file(char* inputfilename) {
   return particles;
 }
 
-void write_file(const std::vector<Particle>& particles, char* outputfilename) {
+void write_file(const std::vector<Particle>& particles, char* outputfilename, bool sci_notation) {
   // Overwrite the file's previous content
   std::ofstream ofs(outputfilename, std::ios_base::trunc);
   if (!ofs.is_open()) {
@@ -56,6 +56,10 @@ void write_file(const std::vector<Particle>& particles, char* outputfilename) {
   // TODO: Print time
   // Print number of particles on first line
   ofs << particles.size() << '\n';
+  // Switch to scientific notation
+  if(sci_notation) {
+    ofs.setf(std::ios_base::scientific);
+  }
   // Print particle index, position, mass, and velocity on each line
   for (const Particle& particle : particles) {
     ofs << particle.index << " "

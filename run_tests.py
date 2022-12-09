@@ -7,8 +7,8 @@ PROGRAMS = [
 # File names without ".txt" extension, for convenient output file naming
 INPUTFILES = {
   # "nb-2-close"  #,
-  "nb-10"         #,
-  # "nb-100"      #,
+  "nb-10"         ,
+  "nb-100"        #,
   # "nb-100000"   #,
 }
 
