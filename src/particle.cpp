@@ -36,7 +36,7 @@ void Particle::update(Vec2<double> force, double dt) {
 std::string Particle::toString() const {
   std::stringstream ss;
   ss << "Particle: [idx: "      << index  << ", "
-                << "mass: "      << mass   << ", "
+                << "mass: "     << mass   << ", "
                 << "position: " << position.toString() << ", "
                 << "velocity: " << velocity.toString() << "]";
   return ss.str();

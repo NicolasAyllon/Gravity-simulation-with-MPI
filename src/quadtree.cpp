@@ -29,7 +29,7 @@ QuadtreeNode::QuadtreeNode(Region<double> r, Particle* p)
 
 std::string QuadtreeNode::toString() {
     std::stringstream ss;
-    ss << "This node: "     << this                           << ", "
+    ss << "@: "             << this                           << ", "
        << "Region: "        << region.toString()              << ", "
        << "particle: "      << (particle != nullptr ?       
                                 particle->toStringMatchInputOrder(true) : 
@@ -40,7 +40,7 @@ std::string QuadtreeNode::toString() {
                             << quadrants[Quadrant::SE] << "]" << ", "
        << "total_mass: "    << total_mass                     << ", "
        << "num_particles: " << num_particles                  << ", "
-       << "com: "           << com.toString()                 << '\n';
+       << "com: "           << com.toString();
     return ss.str();
 }
 
@@ -75,7 +75,8 @@ bool Quadtree::insert(Particle& p) {
     root = insert(root, region, &p);
     return true;
   }
-  // If particle p is outside the region, set mass to -1 and do not insert.
+  // If particle p is outside the region, it is lost.
+  // Set mass to -1 and do not insert.
   else {
     std::cout << "[Lost]" << p.toString() << " Setting m = -1\n";
     p.mass = -1;
