@@ -37,7 +37,6 @@ std::vector<Particle> read_file(char* inputfilename) {
   std::stringstream ss(line);
   int num_particles = 0;
   ss >> num_particles;
-  // std::cout << "num_particles: " << num_particles << '\n';
 
   // Create a vector with this capacity reserved
   std::vector<Particle> particles;
@@ -45,24 +44,25 @@ std::vector<Particle> read_file(char* inputfilename) {
 
   // Reuse line to read data for all particles
   while(std::getline(ifs, line)) {
-    // std::cout << "line: " << line << '\n';
     // Ignore empty lines
     if (line.empty()) { continue; }
     std::stringstream ss(line);
     // Each line contains ordered data:
     Particle p; // uninitialized
-    // std::cout << "before initialization: " << p.toString() << '\n';
     ss >> p.index;
     ss >> p.position.x >> p.position.y;
     ss >> p.mass;
     ss >> p.velocity.x >> p.velocity.y;
-    // std::cout << "after initialization: " << p.toString() << '\n';
     // Add to vector
     particles.emplace_back(p);
   }
   return particles;
 }
 
+// Writes the final state of all particles to the output file.
+// The number of particles is printed on the first line,
+// Particle data is printed one per line, and matches the 
+// order in which it appeared in the input file.
 void write_file(const std::vector<Particle>& particles, char* outputfilename, bool sci_notation) {
   // Overwrite the file's previous content
   std::ofstream ofs(outputfilename, std::ios_base::trunc);
@@ -70,7 +70,6 @@ void write_file(const std::vector<Particle>& particles, char* outputfilename, bo
     perror("Unable to open file");
     exit(EXIT_FAILURE);
   }
-  // TODO: Print time
   // Print number of particles on first line
   ofs << particles.size() << '\n';
   // Switch to scientific notation
