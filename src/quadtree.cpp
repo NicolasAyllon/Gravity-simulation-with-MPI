@@ -10,10 +10,7 @@ QuadtreeNode::QuadtreeNode(Region<double> r)
         total_mass(0), // default-construct: 0 for numeric
         num_particles(0),
         com(Vec2<double>(0, 0)) 
-{
-  // std::cout << "Constructing quadtree node, empty:\n";
-  // std::cout << toString();
-}
+        {}
 
 QuadtreeNode::QuadtreeNode(Region<double> r, Particle* p)
       : region(r),
@@ -22,10 +19,7 @@ QuadtreeNode::QuadtreeNode(Region<double> r, Particle* p)
         total_mass(p->mass),
         num_particles(1),
         com(p->position)
-{
-  // std::cout << "Constructing quadtree node, with particle:\n";
-  // std::cout << toString();
-}
+        {}
 
 std::string QuadtreeNode::toString() {
     std::stringstream ss;
@@ -95,41 +89,28 @@ bool Quadtree::insert(Particle& p) {
 QuadtreeNode* Quadtree::insert(QuadtreeNode* root, 
                                Region<double> region, 
                                Particle* p) {
-  
-  // std::cout << "\nFrame:" << '\n';
-  // std::cout << (root != nullptr ? root->toString() : "nullptr\n");
-  // std::cout << "args: " << region.toString() << ", "
-  //                    << p->toStringMatchInputOrder(true) << '\n'; // address
-  // std::cin.get(); // wait for keypress
   // If node is null, create new node for this region containing the particle
   if (root == nullptr) {
-    // std::cout << "Node* is null, need new node...\n";
     return new QuadtreeNode(region, p); 
   };
 
   // Internal node (contains no particles directly) or newly empty leaf node
   if (root->particle == nullptr) {
-    // std::cout << "Internal node, update center of mass...\n";
     // Update center of mass (com)
     auto n = (root->com)*(root->total_mass) + (p->mass)*(p->position);
     auto d = root->total_mass + p->mass;
     root->com = n/d;
-    // std::cout << "new com: " << root->com.toString() << '\n';
     // Update number of particles & total mass
     root->num_particles++;
-    // std::cout << "incremented num_particles to " << root->num_particles << '\n';
     root->total_mass += p->mass;
-    // std::cout << "increased mass to " << root->total_mass << '\n';
     // Insert into appropriate quadrant
     Quadrant q = quadrant(*p, region);
-    // std::cout << "inserting " << p->toStringMatchInputOrder(true) << " in quadrant " << q << '\n';
     root->quadrants[q] = insert(root->quadrants[q], region.subregion(q), p);
     return root;
   }
 
   // Leaf node (already contains particle)
   else { // root->particle != nullptr
-    // std::cout << "Leaf node, need to remove particle here and reinsert both\n";
     // If particles have same position, no amount of zoom will separate them.
     // Do not add the coincident particle and return this node unchanged.
     if (coincident(p, root->particle)) { return root; }
