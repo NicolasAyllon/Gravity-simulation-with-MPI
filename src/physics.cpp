@@ -6,20 +6,6 @@
 constexpr double r_limit = 0.03;
 constexpr double G = 0.0001;
 
-// UNUSED
-// Returns the force exerted on particle p due to other particle
-Vec2<double> gravity(Particle* p, Particle* other) {
-  // A particle does not exert force on itself.
-  if (p == other) return {0,0};
-  // Compute separation distance d. Use r_limit if d < r_limit.
-  double d = dist(p->position, other->position);
-  d = std::max(d, r_limit);
-  // Compute force with inverse square law:
-  // For m1 at position r and m2 at position r', the force (m2 on m1) is:
-  // f = G*m1*m2*(r'-r) / |r'-r|^3
-  return G*(p->mass)*(other->mass)*(other->position - p->position)/(d*d*d);
-}
-
 // Returns the force exerted on m1 (at position r1) by m2 (at position r2)
 Vec2<double> gravity(double m1, double m2, Vec2<double> r1, Vec2<double> r2) {
   // Compute separation distance d. Use r_limit if d < r_limit.
@@ -79,15 +65,4 @@ Vec2<double> calc_net_force(const Particle& p, const Quadtree& tree, double thet
   Vec2<double> force = {0,0};
   calc_net_force(&p, tree.root, theta, force);  
   return force;
-}
-
-// UNUSED (output parameter version)
-// Calculate the net force on particle p from all other particles in the
-// quadtree using the given value of theta as a threshold for approximations.
-// Note: force vector is an output parameter and must be 0-initialized before.
-void calc_net_force(const Particle& p, const Quadtree& tree, double theta, Vec2<double>& f) {
-  // Ignore lost particles
-  if(p.mass == -1) return;
-  // Modify
-  calc_net_force(&p, tree.root, theta, f);
 }
