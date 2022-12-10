@@ -82,12 +82,7 @@ int main(int argc, char* argv[]) {
     MPI_Bcast(particles.data(), N_particles*sizeof(Particle), 
               MPI_BYTE, 0, MPI_COMM_WORLD);
     printf("[Process %d] Step %d: Broadcast complete\n", rank, s);
-    // printf("[Process %d] vector<Particles>: len %lu, cap %lu\n", rank, particles.size(), particles.capacity());
     // Now all processes have the same data in the particles vector
-
-    // for (size_t i = 0; i < particles.size(); ++i) {
-    //   printf("[Process %d] Step %d: %s\n", rank, s, particles[i].toString().c_str());
-    // }
 
     // 2. All processes independently construct their own quadtrees
     // Create Quadtree for rectangular region (0<=x<=4, 0<=y<=4)
@@ -98,24 +93,14 @@ int main(int argc, char* argv[]) {
     // They are not inserted into the quadtree and their mass is set to m = 
     // Subsequent stages check for m = -1 to ignore lost particles.
     for (Particle& particle : particles) {
-      // std::cout << "[Loop] about to insert " 
-      //           << particle.toStringMatchInputOrder(true) << '\n';
       quadtree.insert(particle);
     }
 
     // 3. All processes calculate forces for their section of particles
     // For each particle, compute force
     std::vector<Vec2<double>> forces(N_particles, {0,0});
-    // for (Vec2<double> f : forces) {
-    //   std::cout << f.toString() << '\n';
-    // }
-    // printf("[Process %d] Step %d: calculating forces for particles [%d, %d)\n", rank, s, start, end);
     for (int i = start; i < end; ++i) {
-      // calc_net_force(particles[i], quadtree, opts.theta, forces[i]);
-      // std::cout << "Calculating force for Particle " << i << '\n';
       forces[i] = calc_net_force(particles[i], quadtree, opts.theta);
-      // std::cout << particles[i].toStringMatchInputOrder(true) 
-      //           << ", Force: " << forces[i].toString() << '\n';
     }
 
     // 4. All processes calculate updated particle positions for the assigned
@@ -123,10 +108,6 @@ int main(int argc, char* argv[]) {
     for (int i = start; i < end; ++i) {
       particles[i].update(forces[i], opts.dt);
     }
-    // for (int i = start; i < end; ++i) {
-    //   particles[i].position.x += 10;
-    //   particles[i].position.y += 20;
-    // }
 
     // Synchronization point: MPI_Gatherv is blocking
     // Gather updated particle vector subsections in root process
@@ -142,73 +123,13 @@ int main(int argc, char* argv[]) {
                   particles.data(), recvcounts, displacements, MPI_BYTE, 
                   0, MPI_COMM_WORLD);
     }
-    // [?] Root process receives & gathers updated particle data
-    // See if root process (and only root) shows updates made by others
-    for (size_t i = 0; i < particles.size(); ++i) {
-      // printf("[Process %d] Step %d: %s\n", rank, s, particles[i].toString().c_str());
-    }
   }
+  // All steps complete.
   // Write output (root process)
   if (rank == 0) {
     write_file(particles, opts.outputfilename, false);
   }
 
   MPI_Finalize();
-  return 0; // <!> end here for now
-  // All processes end up with a copy of n_particles set in root process
-
-
-  // // Get options
-  // struct options_t opts;
-  // get_opts(argc, argv, &opts); print_opts(&opts);
-
-  // // Read file
-  // std::vector<Particle> particles = read_file(opts.inputfilename);
-  // size_t n_particles = particles.size();
-  // // std::cout << "vector<Particle>: len: " << particles.size() << ", cap: " << particles.capacity() << '\n';
-
-  // // For steps = 0..num_steps-1
-  // for (int s = 0; s < opts.steps; ++s) {
-  //   // std::cout << "s = " << s << '\n';
-  //   // Create Quadtree for rectangular region (0<=x<=4, 0<=y<=4)
-  //   Region<double> region = {0, 4, 0, 4};
-  //   Quadtree quadtree(region);
-
-  //   // Insert particles
-  //   // Particles that move outside the region are "lost". 
-  //   // They are not inserted into the quadtree and their mass is set to m = -1
-  //   // Subsequent stages check for m = -1 to ignore lost particles.
-  //   for (Particle& particle : particles) {
-  //     // std::cout << "[Loop] about to insert " << particle.toStringMatchInputOrder(true) << '\n';
-  //     quadtree.insert(particle);
-  //   }
-
-  //   // For each particle, compute force
-  //   std::vector<Vec2<double>> forces(n_particles, {0,0});
-  //   // for (Vec2<double> f : forces) {
-  //   //   std::cout << f.toString() << '\n';
-  //   // }
-  //   // Alternatively std::vector<Vec2<double>> forces(); forces.reserve(n_particles);
-  //   int start = 0; int end = n_particles;
-  //   // std::cout << "start: " << start << ", end: " << end << '\n';
-  //   for (int i = start; i < end; ++i) {
-  //     // calc_net_force(particles[i], quadtree, opts.theta, forces[i]);
-  //     // std::cout << "Calculating force for Particle " << i << '\n';
-  //     forces[i] = calc_net_force(particles[i], quadtree, opts.theta);
-  //     // std::cout << particles[i].toStringMatchInputOrder(true) 
-  //     //           << ", Force: " << forces[i].toString() << '\n';
-  //   }
-
-  //   // Calculate new position
-  //   // std::cout << "start: " << start << ", end: " << end << '\n';
-  //   for (int i = start; i < end; ++i) {
-  //     particles[i].update(forces[i], opts.dt);
-  //   }
-  // }
-
-  // // Write output
-  // write_file(particles, opts.outputfilename, false);
-
-  return 0; // <!> end here for now
-
+  return 0;
 }
