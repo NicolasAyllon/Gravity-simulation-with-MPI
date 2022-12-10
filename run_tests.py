@@ -8,7 +8,7 @@ INPUTFILES = [
   # "nb-100"        ,
   # "nb-100000"     
 ]
-PROCESSES = [ 4 ]
+PROCESSES = [ 1, 2, 3, 4, 8, 16 ]
 STEPS = 1000
 THETA = 0.5
 DT_TIMESTEP = 0.005
@@ -17,6 +17,7 @@ NUM_TESTS = 1
 for program in PROGRAMS:
     for filename in INPUTFILES:
         for n_processes in PROCESSES:
+            print("{}-{}/{}".format(filename, STEPS, n_processes))
             for i in range(NUM_TESTS):
                 subprocess.call([
                   "mpirun",
