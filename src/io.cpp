@@ -6,6 +6,23 @@
 #include <sstream>
 #include <vector>
 
+// Reads only the first line of the file that contains the number of particles.
+int read_num_particles(char* inputfilename) {
+  std::ifstream ifs(inputfilename);
+  if (!ifs.is_open()) {
+    perror("Unable to open file");
+    exit(EXIT_FAILURE);
+  }
+  // Get first line that contains the number of points
+  int num_particles = 0;
+  ifs >> num_particles;
+
+  // Reset stream marker to beginning
+  ifs.seekg(0, std::ios_base::beg);
+  ifs.close();
+  return num_particles;
+}
+
 // Reads the input file and returns vector of particles
 std::vector<Particle> read_file(char* inputfilename) {
   std::ifstream ifs(inputfilename);

@@ -4,6 +4,8 @@
 #include <vector>
 #include "particle.h"
 
+// Reads only the first line of the file that contains the number of particles.
+int read_num_particles(char* inputfilename);
 // Reads the given file and returns the data in a vector of Particles
 std::vector<Particle> read_file(char* inputfilename);
 

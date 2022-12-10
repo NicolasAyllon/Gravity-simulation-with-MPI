@@ -5,12 +5,12 @@ PROGRAMS = [
 ]
 
 # File names without ".txt" extension, for convenient output file naming
-INPUTFILES = {
-  # "nb-2-close"  #,
+INPUTFILES = [
+  # "nb-2-close"    ,
   "nb-10"         ,
-  "nb-100"        #,
-  # "nb-100000"   #,
-}
+  # "nb-100"        ,
+  # "nb-100000"     
+]
 
 # Maybe change to arrays later
 STEPS = 1000

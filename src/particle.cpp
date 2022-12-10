@@ -45,7 +45,7 @@ std::string Particle::toString() const {
   return ss.str();
 }
 
-std::string Particle::toStringMatchInputOrder(bool show_address) const {
+std::string Particle::toStringMatchInput(bool show_address) const {
   std::stringstream ss;
   ss << "Particle: [idx: "      << index  << ", "
                 << "position: " << position.toString() << ", "

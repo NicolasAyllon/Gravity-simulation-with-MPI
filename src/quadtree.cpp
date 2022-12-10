@@ -32,7 +32,7 @@ std::string QuadtreeNode::toString() {
     ss << "@: "             << this                           << ", "
        << "Region: "        << region.toString()              << ", "
        << "particle: "      << (particle != nullptr ?       
-                                particle->toStringMatchInputOrder(true) : 
+                                particle->toStringMatchInput(true) : 
                                 "nullptr") << ", "
        << "quadrants: ["    << quadrants[Quadrant::NE] << ", "
                             << quadrants[Quadrant::NW] << ", "

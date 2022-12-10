@@ -14,7 +14,7 @@ struct Particle {
 
   void update(Vec2<double> force, double dt);
   std::string toString() const;
-  std::string toStringMatchInputOrder(bool) const;
+  std::string toStringMatchInput(bool) const;
 };
 
 bool coincident(Particle* a, Particle* b);
