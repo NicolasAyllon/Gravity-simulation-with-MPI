@@ -8,6 +8,9 @@
 #include "physics.h"
 #include "vector.h"
 
+// TODO: Add timing
+// TODO: Measure
+// TODO: Report
 int main(int argc, char* argv[]) {
 
   // Get options
@@ -34,9 +37,15 @@ int main(int argc, char* argv[]) {
   printf("[Process %d] N_particles = %d\n", rank, N_particles);
   // All processes prepare an initialized vector to hold that many particles
   std::vector<Particle> particles(N_particles);
-  // Root process reads particles into its particles vector & broadcasts
-  if (rank == 0) {
-    particles = read_file(opts.inputfilename);
+
+  // Root reads particles into its particles vector
+  if (rank == 0) { 
+    particles = read_file(opts.inputfilename); 
+  }
+  // Start timer (root process only, before 1st broadcast)
+  double t_start = 0; double t_end = 0;
+  if (rank == 0) { 
+    t_start = MPI_Wtime(); 
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -75,9 +84,7 @@ int main(int argc, char* argv[]) {
   //////////////////////////////////////////////////////////////////////////////
   // Core loop
   //////////////////////////////////////////////////////////////////////////////
-  // FOR i = 0..STEPS
   for (int s = 0; s < opts.steps; ++s) {
-
     // 1. Root process broadcasts new particle data and others receive
     MPI_Bcast(particles.data(), N_particles*sizeof(Particle), 
               MPI_BYTE, 0, MPI_COMM_WORLD);
@@ -125,11 +132,16 @@ int main(int argc, char* argv[]) {
     }
   }
   // All steps complete.
-  // Write output (root process)
-  if (rank == 0) {
+  // Stop timer (core loop, root process only) and print output
+  if (rank == 0) { 
+    t_end = MPI_Wtime();
+    double elapsed_seconds = t_end - t_start;
+    printf("%f\n", elapsed_seconds);
+  }
+  // Write output file (root process only)
+  if (rank == 0) { 
     write_file(particles, opts.outputfilename, false);
   }
-
   MPI_Finalize();
   return 0;
 }
