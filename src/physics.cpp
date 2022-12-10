@@ -1,8 +1,8 @@
-#include <vector>
 #include "vector.h"
 #include "particle.h"
 #include "physics.h"
 
+// Suggested constants
 constexpr double r_limit = 0.03;
 constexpr double G = 0.0001;
 
@@ -81,6 +81,7 @@ Vec2<double> calc_net_force(const Particle& p, const Quadtree& tree, double thet
   return force;
 }
 
+// UNUSED (output parameter version)
 // Calculate the net force on particle p from all other particles in the
 // quadtree using the given value of theta as a threshold for approximations.
 // Note: force vector is an output parameter and must be 0-initialized before.
