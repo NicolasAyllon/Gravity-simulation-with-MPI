@@ -85,12 +85,11 @@ int main(int argc, char* argv[]) {
     // printf("[Process %d] vector<Particles>: len %lu, cap %lu\n", rank, particles.size(), particles.capacity());
     // Now all processes have the same data in the particles vector
 
-    for (size_t i = 0; i < particles.size(); ++i) {
-      printf("[Process %d] Step %d: %s\n", rank, s, particles[i].toString().c_str());
-    }
+    // for (size_t i = 0; i < particles.size(); ++i) {
+    //   printf("[Process %d] Step %d: %s\n", rank, s, particles[i].toString().c_str());
+    // }
 
     // 2. All processes independently construct their own quadtrees
-    // TODO
     // Create Quadtree for rectangular region (0<=x<=4, 0<=y<=4)
     Region<double> region = {0, 4, 0, 4};
     Quadtree quadtree(region);
@@ -110,7 +109,7 @@ int main(int argc, char* argv[]) {
     // for (Vec2<double> f : forces) {
     //   std::cout << f.toString() << '\n';
     // }
-    printf("[Process %d] Step %d: calculating forces for particles [%d, %d)\n", rank, s, start, end);
+    // printf("[Process %d] Step %d: calculating forces for particles [%d, %d)\n", rank, s, start, end);
     for (int i = start; i < end; ++i) {
       // calc_net_force(particles[i], quadtree, opts.theta, forces[i]);
       // std::cout << "Calculating force for Particle " << i << '\n';
@@ -146,11 +145,13 @@ int main(int argc, char* argv[]) {
     // [?] Root process receives & gathers updated particle data
     // See if root process (and only root) shows updates made by others
     for (size_t i = 0; i < particles.size(); ++i) {
-      printf("[Process %d] Step %d: %s\n", rank, s, particles[i].toString().c_str());
+      // printf("[Process %d] Step %d: %s\n", rank, s, particles[i].toString().c_str());
     }
   }
-  // Write output
-  write_file(particles, opts.outputfilename, false);
+  // Write output (root process)
+  if (rank == 0) {
+    write_file(particles, opts.outputfilename, false);
+  }
 
   MPI_Finalize();
   return 0; // <!> end here for now
