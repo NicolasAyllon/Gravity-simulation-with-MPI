@@ -34,15 +34,72 @@ int main(int argc, char* argv[]) {
   if (rank == 0) {
     particles = read_file(opts.inputfilename);
   }
-  void* data = particles.data();
-  MPI_Bcast(data, N_particles*sizeof(Particle), MPI_BYTE, 0, MPI_COMM_WORLD);
-  printf("[Process %d] vector<Particles>: len %lu, cap %lu\n", rank, particles.size(), particles.capacity());
-  // Now all processes have the same data in the particles vector
 
-  for (size_t i = 0; i < particles.size(); ++i) {
-    printf("[Process %d] Particle %lu: %s\n", rank, i, particles[i].toString().c_str());
+
+  // Each process will calculate forces for a section of the particles vector.
+  // Use rank to calculate the start and end indices of its part.
+  // Divide particles among processes, rounding up to cover all particles.
+  // This process will calculate forces for particles with index [start, end)
+  //
+  // Create recvcounts & displacements arrays to use in MPI_Gatherv
+  int* recvcounts = (int*)malloc(size * sizeof(int));
+  int* displacements = (int*)malloc(size * sizeof(int));
+  // Fill recvcounts & displacements arrays, in units of bytes: MPI_BYTE
+  int n_per_process = (N_particles + size-1)/size; // = ceil(N_particles/size)
+  for (int i = 0; i < size; ++i) {
+    int start_idx = i*n_per_process;
+    int end_idx = std::min((i+1)*n_per_process, N_particles); // to Nth particle
+    recvcounts[i] = (end_idx - start_idx) * sizeof(Particle);
+    displacements[i] = start_idx * sizeof(Particle);
   }
+  // Store this process's start and end indices for the particles vector
+  int start = rank*n_per_process;
+  int end = std::min((rank+1)*n_per_process, N_particles);
+  int count = end - start;
 
+  printf("[Process %d] will calc forces for [%d, %d)\n", rank, start, end);
+  
+  // FOR i = 0..STEPS
+  for (int s = 0; s < 1; ++s) { // TODO: replace upper bound with opts.steps
+
+    // Root process broadcasts particle data and others receive
+    void* data = particles.data();
+    MPI_Bcast(data, N_particles*sizeof(Particle), MPI_BYTE, 0, MPI_COMM_WORLD);
+    printf("[Process %d] vector<Particles>: len %lu, cap %lu\n", rank, particles.size(), particles.capacity());
+    // Now all processes have the same data in the particles vector
+
+    for (size_t i = 0; i < particles.size(); ++i) {
+      printf("[Process %d] Particle %lu: %s\n", rank, i, particles[i].toString().c_str());
+    }
+
+    // All processes independently construct their own quadtrees
+
+    // All processes calculate forces for their section of particles
+    for (int i = start; i < end; ++i) {
+      particles[i].position.x += 10;
+      particles[i].position.y += 20;
+    }
+
+    // Gather updated particle vector subsections in root process
+    // Root process (and only root) requires MPI_IN_PLACE to use the same buffer
+    // for input & output (where input=output & already correct/updated)
+    if(rank == 0) { // with MPI_IN_PLACE, sendcount & sendtype are ignored
+      MPI_Gatherv(MPI_IN_PLACE, count * sizeof(Particle), MPI_BYTE,
+                  particles.data(), recvcounts, displacements, MPI_BYTE, 
+                  0, MPI_COMM_WORLD);
+      printf("Gathering...\n");
+    } else { // Other processes must specify sendbuf, sendcount, & sendtype
+      MPI_Gatherv(&particles.data()[start], count * sizeof(Particle), MPI_BYTE, 
+                  particles.data(), recvcounts, displacements, MPI_BYTE, 
+                  0, MPI_COMM_WORLD);
+    }
+    // [?] Root process receives & gathers updated particle data
+    // See if root process (and only root) shows updates made by others
+    for (size_t i = 0; i < particles.size(); ++i) {
+      printf("[Process %d] Particle %lu: %s\n", rank, i, particles[i].toString().c_str());
+    }
+
+  }
   MPI_Finalize();
   return 0; // <!> end here for now
   // All processes end up with a copy of n_particles set in root process
