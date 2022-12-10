@@ -7,6 +7,8 @@ EXEC = bin/nbody
 
 # Make directory for target nbody executable
 $(shell mkdir -p bin)
+# Make directories for outputs
+$(shell mkdir -p output/mpi)
 
 all: clean compile
 
