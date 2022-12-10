@@ -13,7 +13,9 @@ struct options_t {
   double theta;           // -t: threshold ratio S/D
                           //     S = region side length
                           //     D = distance to center of mass
+                          //     (recommended theta = 0.5)
   double dt;              // -d: timestep (seconds)
+                          //     (recommended dt = 0.005)
   bool visualization;     // -V: (OPTIONAL) flag for visualization window
                           //     false -> no visualization (default)
                           //     true  -> use visualization
