@@ -73,7 +73,7 @@ void write_file(const std::vector<Particle>& particles, char* outputfilename, bo
   // Print number of particles on first line
   ofs << particles.size() << '\n';
   // Switch to scientific notation
-  if(sci_notation) {
+  if (sci_notation) {
     ofs.setf(std::ios_base::scientific);
   }
   // Print particle index, position, mass, and velocity on each line

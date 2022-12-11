@@ -72,9 +72,9 @@ bool Quadtree::insert(Particle& p) {
   // If particle p is outside the region, it is lost.
   // Set mass to -1 and do not insert.
   else {
-    if(p.mass != -1) {
+    if (p.mass != -1) {
       p.mass = -1;
-      std::cout << "[Lost]: " << p.toString() << " Setting m = -1\n";
+      // std::cout << "[Lost]: " << p.toString() << " Setting m = -1\n";
     }
     return false;
   }

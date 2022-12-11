@@ -16,7 +16,7 @@ bool coincident(Particle* a, Particle* b) {
 ////////////////////////////////////////////////////////////////////////////////
 void Particle::update(Vec2<double> force, double dt) {
   // Ignore lost particles
-  if(mass == -1) return;
+  if (mass == -1) return;
   // Integrate to find next position
   Vec2<double> acceleration = force/mass;
   auto& a = acceleration;

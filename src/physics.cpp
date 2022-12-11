@@ -60,7 +60,7 @@ void calc_net_force(const Particle* p, QuadtreeNode* node, double theta,
 // Note: force vector is returned by value
 Vec2<double> calc_net_force(const Particle& p, const Quadtree& tree, double theta) {
   // Ignore lost particles
-  if(p.mass == -1) return {0,0};
+  if (p.mass == -1) return {0,0};
   // Create 0 vector to start, modify, then return
   Vec2<double> force = {0,0};
   calc_net_force(&p, tree.root, theta, force);  

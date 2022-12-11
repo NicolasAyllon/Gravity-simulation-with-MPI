@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
     Quadtree quadtree(region);
     // Insert particles
     // Particles that move outside the region are "lost". 
-    // They are not inserted into the quadtree and their mass is set to m = 
+    // They are not inserted into the quadtree and their mass is set to m = -1
     // Subsequent stages check for m = -1 to ignore lost particles.
     for (Particle& particle : particles) {
       quadtree.insert(particle);
@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
     // [Synchronization point: MPI_Gatherv is blocking]
     // Root process (and only root) requires MPI_IN_PLACE to use the same buffer
     // for input & output (where input=output & already correct/updated)
-    if(rank == 0) { // with MPI_IN_PLACE, sendcount & sendtype are ignored
+    if (rank == 0) { // with MPI_IN_PLACE, sendcount & sendtype are ignored
       MPI_Gatherv(MPI_IN_PLACE, count * sizeof(Particle), MPI_BYTE,
                   particles.data(), recvcounts, displacements, MPI_BYTE, 
                   0, MPI_COMM_WORLD);
