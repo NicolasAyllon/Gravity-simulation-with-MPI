@@ -8,9 +8,6 @@
 #include "physics.h"
 #include "vector.h"
 
-// TODO: Add timing
-// TODO: Measure
-// TODO: Report
 int main(int argc, char* argv[]) {
 
   // Get options
@@ -34,7 +31,6 @@ int main(int argc, char* argv[]) {
   // Synchronization point: MPI_Bcast is blocking
   MPI_Bcast(&N_particles, 1, MPI_INT, 0, MPI_COMM_WORLD);
   // Now all processes have the same value of number of particles
-  printf("[Process %d] N_particles = %d\n", rank, N_particles);
   // All processes prepare an initialized vector to hold that many particles
   std::vector<Particle> particles(N_particles);
 
@@ -79,17 +75,18 @@ int main(int argc, char* argv[]) {
   int start = starts[rank];
   int end = ends[rank];
   int count = end - start;
-  printf("[Process %d] will calc forces for [%d, %d)\n", rank, start, end);
+  // printf("[Process %d] will calc forces for [%d, %d)\n", rank, start, end);
 
   //////////////////////////////////////////////////////////////////////////////
   // Core loop
   //////////////////////////////////////////////////////////////////////////////
   for (int s = 0; s < opts.steps; ++s) {
     // 1. Root process broadcasts new particle data and others receive
+    // [Synchronization point: MPI_Bcast is blocking]
     MPI_Bcast(particles.data(), N_particles*sizeof(Particle), 
               MPI_BYTE, 0, MPI_COMM_WORLD);
-    printf("[Process %d] Step %d: Broadcast complete\n", rank, s);
     // Now all processes have the same data in the particles vector
+    // printf("[Process %d] Step %d: Broadcast complete\n", rank, s);
 
     // 2. All processes independently construct their own quadtrees
     // Create Quadtree for rectangular region (0<=x<=4, 0<=y<=4)
@@ -111,20 +108,20 @@ int main(int argc, char* argv[]) {
     }
 
     // 4. All processes calculate updated particle positions for the assigned
-    //    slice of the particles vector.
+    // slice of the particles vector.
     for (int i = start; i < end; ++i) {
       particles[i].update(forces[i], opts.dt);
     }
 
-    // Synchronization point: MPI_Gatherv is blocking
-    // Gather updated particle vector subsections in root process
+    // 5. Gather updated particle vector subsections in root process
+    // [Synchronization point: MPI_Gatherv is blocking]
     // Root process (and only root) requires MPI_IN_PLACE to use the same buffer
     // for input & output (where input=output & already correct/updated)
     if(rank == 0) { // with MPI_IN_PLACE, sendcount & sendtype are ignored
       MPI_Gatherv(MPI_IN_PLACE, count * sizeof(Particle), MPI_BYTE,
                   particles.data(), recvcounts, displacements, MPI_BYTE, 
                   0, MPI_COMM_WORLD);
-      printf("[Process %d] Gathering...\n", rank);
+      // printf("[Process %d] Gathering...\n", rank);
     } else { // Other processes must specify sendbuf, sendcount, & sendtype
       MPI_Gatherv(&particles.data()[start], count * sizeof(Particle), MPI_BYTE, 
                   particles.data(), recvcounts, displacements, MPI_BYTE, 
