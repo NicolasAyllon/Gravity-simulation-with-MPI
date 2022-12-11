@@ -1,11 +1,13 @@
 import subprocess
 
+# Instructions: run with "python3 run_tests.py"
+
 PROGRAMS = [ "nbody" ]
 # File names without ".txt" extension, for convenient output file naming
 INPUTFILES = [
   # "nb-2-close"    ,
-  # "nb-10"         ,
-  "nb-100"        ,
+  "nb-10"         ,
+  # "nb-100"        ,
   # "nb-100000"     
 ]
 
@@ -13,7 +15,6 @@ PROCESSES = [
   1, 2, 3, 4, 6, 
   # 8, 10, 12, 14, 16
 ]
-# PROCESSES = [ 1, 2, 3, 4, 6, 8, 10, 12, 14, 16 ]
 STEPS = 1000
 THETAS = [
   # 0, 0.25, 
