@@ -22,7 +22,7 @@ THETAS = [
   # 0.75, 1
 ]
 DT_TIMESTEP = 0.005
-NUM_TESTS = 20
+NUM_TESTS = 1
 
 for program in PROGRAMS:
     for filename in INPUTFILES:
@@ -43,5 +43,5 @@ for program in PROGRAMS:
                         "-t", str(theta),
                         "-d", str(DT_TIMESTEP)
                     ])
-                    print(' ', end='', flush=True) # Python 3
-                print('', end='\n', flush=True) # Python 3
+                    # print(' ', end='', flush=True) # Python 3
+                # print('', end='\n', flush=True) # Python 3
